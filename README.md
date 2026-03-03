@@ -3,7 +3,7 @@ Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec)
 
 ## Table des matières
 - [Modèles](#modèles)
-- [Métriques d'évaluation](#métriques-d-évaluation)
+- [Métriques d'évaluation](#métriques-évaluation)
 
 ## Modèles
 Ce projet se concentre sur l'évaluation de deux modèles d'embeddings pour comprendre la signification sémantique des documents.
@@ -14,7 +14,7 @@ Top2Vec est un algorithme de modélisation thématique et de recherche sémantiq
 ### BERTopic
 BERTopic est un framework moderne de modélisation thématique qui répond à de nombreuses limites des approches traditionnelles. Développé par Maarten Grootendorst , il utilise des plongements (embeddings) basés sur des transformeurs (comme BERT) pour comprendre la signification sémantique des documents et les regrouper en clusters en fonction de leur contexte, plutôt que de se baser uniquement sur la fréquence des mots.
 
-## Métriques d'évaluation
+## <a id="métriques-évaluation"></a>Métriques d'évaluation
 Ce projet utilise trois métriques d'évaluation pour évaluer les performances des modèles. Ces métriques sont la cohérence, le retrieval et la diversité.
 
 ### Cohérence
