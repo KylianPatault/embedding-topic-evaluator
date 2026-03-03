@@ -1,1 +1,0 @@
-# Métrique de diversité des topics
