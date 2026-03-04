@@ -20,20 +20,20 @@ def load_model_BERTopic(config : dict = None) -> BERTopic:
     umap_model = None 
     hdbscan_model = None 
 
-    # Vérification de la présence ou non d'un fichier de configuration pour UMAP, sinon fournis défini à None. 
+    # Vérification de la présence ou non d'un fichier de configuration pour UMAP, sinon défini à None. 
     if "UMAP" in config.keys() : 
         umap_config = config["UMAP"]
         umap_model = UMAP(n_neighbors=umap_config["n_neighbors"], n_components=umap_config["n_components"], 
                           min_dist=umap_config["min_dist"], metric=umap_config["metric"])
         
-    # Vérification de la présence ou non d'un fichier de configuration pour HDBSCAN, sinon fournis défini à None. 
+    # Vérification de la présence ou non d'un fichier de configuration pour HDBSCAN, sinon défini à None. 
     if "HDBSCAN" in config.keys() : 
         hdbscan_config = config["HDBSCAN"]
         hdbscan_model = HDBSCAN(min_cluster_size=hdbscan_config["min_cluster_size"], min_samples=hdbscan_config["min_samples"] , 
                                 metric=hdbscan_config["metric"], cluster_selection_method=hdbscan_config["cluster_selection_method"], 
                                 prediction_data=hdbscan_config["prediction_data"])
 
-    # Vérification de la présence ou non d'un fichier de configuration pour KMeans, si HDBSCAN non fournis, sinon fournis défini à None. 
+    # Vérification de la présence ou non d'un fichier de configuration pour KMeans, si HDBSCAN non défini, sinon défini à None. 
     elif "KMeans" in config.keys() :
         hdbscan_config = config["KMeans"]
         hdbscan_model = KMeans(n_clusters=hdbscan_config["n_clusters"]) 
