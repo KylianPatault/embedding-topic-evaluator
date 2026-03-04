@@ -6,7 +6,7 @@ import pytrec_eval
 
 def calculate_retrieval_metrics(target: np.ndarray, probs: np.ndarray) -> dict:
     """
-    Calcule les métriques de "retrieval" en préparant les fichiers qrel et run à l'aide de la bibliothèque pytrec_eval.
+    Calcule les métriques de "retrieval" en préparant le dictionnaire qrel et run à l'aide de la bibliothèque pytrec_eval.
     Métriques : 
         - Mean Average Precision (MAP)
         - Normalized Discounted Cumulative Gain (NDCG)
@@ -23,7 +23,7 @@ def calculate_retrieval_metrics(target: np.ndarray, probs: np.ndarray) -> dict:
 
 def prepare_qrel(true_labels: np.ndarray) -> dict:
     """
-    Prépare le fichier qrel pour la bibliothèque pytrec_eval
+    Prépare le dictionnaire qrel pour la bibliothèque pytrec_eval
     true_labels: tableau des étiquettes réelles
     return: dictionnaire qrel
     """
@@ -38,7 +38,7 @@ def prepare_qrel(true_labels: np.ndarray) -> dict:
 
 def prepare_run(probs: np.ndarray) -> dict:
     """
-    Prépare le fichier run pour la bibliothèque pytrec_eval
+    Prépare le dictionnaire run pour la bibliothèque pytrec_eval
     probs: tableau des probabilités
     return: dictionnaire run
     """
