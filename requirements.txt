@@ -1,0 +1,10 @@
+numpy
+scikit-learn
+sentence-transformers
+bertopic
+top2vec
+pytrec_eval
+flair
+gensim
+spacy
+ipykernel

@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+[project]
+name = "embedding-topic-evaluator"
+version = "0.1.0"
+description = "Plateforme d'évaluation de topic models basée sur les embeddings"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+dependencies = [
+    "numpy",
+    "scikit-learn",
+    "sentence-transformers",
+    "bertopic",
+    "top2vec",
+    "pytrec_eval",
+    "flair",
+    "gensim",
+    "spacy",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ipykernel",
+]
