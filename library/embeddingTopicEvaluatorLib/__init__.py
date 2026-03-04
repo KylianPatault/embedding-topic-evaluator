@@ -3,3 +3,5 @@
 # Métriques : cohérence, retrieval, diversité
 
 from .config import config 
+from .models import bertopic_wrapper
+from .utils import embeddings, topics
