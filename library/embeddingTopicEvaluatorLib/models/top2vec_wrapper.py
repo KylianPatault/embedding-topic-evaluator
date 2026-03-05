@@ -25,10 +25,10 @@ def load_model_Top2Vec(config : dict = None) -> Top2Vec:
                               min_dist=umap_config["min_dist"], metric=umap_config["metric"])
     
     # Création du modèle Top2Vec
-    Top2Vec_config = config["TOP2VEC"]
-    topic_model = Top2Vec(embedding_model=Top2Vec_config["embedding_model"], 
+    top2vec_config = config["TOP2VEC"]
+    topic_model = Top2Vec(embedding_model=top2vec_config["embedding_model"], 
                           umap_model=umap_model, 
-                          min_count=Top2Vec_config["min_count"], 
-                          nr_topics=Top2Vec_config["nr_topics"], 
-                          verbose=Top2Vec_config["verbose"])
+                          min_count=top2vec_config["min_count"], 
+                          nr_topics=top2vec_config["nr_topics"], 
+                          verbose=top2vec_config["verbose"])
     return topic_model

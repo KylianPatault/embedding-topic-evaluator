@@ -42,8 +42,8 @@ def load_model_BERTopic(config : dict = None) -> BERTopic:
             hdbscan_model = KMeans(n_clusters=hdbscan_config["n_clusters"]) 
 
     # Création du modèle BERTopic
-    BERTopic_config = config["BERTopic"]
-    topic_model = BERTopic(embedding_model=BERTopic_config["embedding_model"], 
+    berTopic_config = config["BERTopic"]
+    topic_model = BERTopic(embedding_model=berTopic_config["embedding_model"], 
                            umap_model=umap_model, hdbscan_model=hdbscan_model, 
-                           nr_topics=BERTopic_config["nr_topics"], verbose=BERTopic_config["verbose"])
+                           nr_topics=berTopic_config["nr_topics"], verbose=berTopic_config["verbose"])
     return topic_model
