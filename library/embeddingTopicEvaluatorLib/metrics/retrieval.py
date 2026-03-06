@@ -1,53 +1,73 @@
 # Métrique de retrieval des topics
 
-from bertopic import BERTopic
 import numpy as np
 import pytrec_eval
+from sklearn.metrics.pairwise import cosine_similarity
 
-def calculate_retrieval_metrics(target: np.ndarray, probs: np.ndarray) -> dict:
+from ..models.base import TopicModelEvaluator
+
+def retrieval(topic_model: TopicModelEvaluator, docs: list) -> {}:
     """
     Calcule les métriques de "retrieval" en préparant le dictionnaire qrel et run à l'aide de la bibliothèque pytrec_eval.
     Métriques : 
         - Mean Average Precision (MAP)
         - Normalized Discounted Cumulative Gain (NDCG)
-        - Precision at 5 (P@5)
-        - Reciprocal Rank (RR)
+    topic_model: modèle TopicModelEvaluator
     return: dictionnaire des métriques
     """
-    metrics = {}
-    qrel = prepare_qrel(target)
-    run = prepare_run(probs)
-    evaluator = pytrec_eval.RelevanceEvaluator(qrel, {'map', 'ndcg', 'P_5', 'recip_rank'})
-    metrics = evaluator.evaluate(run) # Compare le run au qrel et renvoie les scores par topic
-    return metrics
+    
+    qrel, predictions = prepare_data(topic_model=topic_model, docs=docs)
 
-def prepare_qrel(true_labels: np.ndarray) -> dict:
-    """
-    Prépare le dictionnaire qrel pour la bibliothèque pytrec_eval
-    true_labels: tableau des étiquettes réelles
-    return: dictionnaire qrel
-    """
-    qrel = {}
-    for doc_idx, label in enumerate(true_labels):
-        topic_id = str(label)
-        doc_id = str(doc_idx)
-        if topic_id not in qrel:
-            qrel[topic_id] = {}
-        qrel[topic_id][doc_id] = 1 # Document pertinent pour le topic (score à 1)
-    return qrel
+    evaluator = pytrec_eval.RelevanceEvaluator(qrel, {'map', 'ndcg'})
+    results = evaluator.evaluate(predictions)
+    
+    return results
 
-def prepare_run(probs: np.ndarray) -> dict:
+def prepare_data(topic_model: TopicModelEvaluator, docs: list) -> tuple[dict, dict]:
     """
-    Prépare le dictionnaire run pour la bibliothèque pytrec_eval
-    probs: tableau des probabilités
-    return: dictionnaire run
+    Prépare le dictionnaire qrel et run pour la bibliothèque pytrec_eval
+    topic_model: modèle TopicModelEvaluator
+    return: dictionnaire qrel et run
     """
-    run = {}
-    for topic_idx in range(probs.shape[1]): # Pour chaque topic
-        topic_id = str(topic_idx)
-        run[topic_id] = {}
-        for doc_idx in range(probs.shape[0]): # Pour chaque document
-            doc_id = str(doc_idx)
-            # Récupère la probabilité que le document doc_idx appartienne au topic topic_idx
-            run[topic_id][doc_id] = float(probs[doc_idx, topic_idx])
-    return run
+    
+    documentInfos = topic_model.getDocumentInfos(docs)
+    documentInfos = documentInfos[documentInfos['Topic'] != -1]
+
+    # Faire l'embedding de tous les documents d'un coup
+    all_docs = documentInfos['Document'].tolist()
+    docs_embeddings = np.array(
+        topic_model.getDocumentsVectors(all_docs)
+    ) # shape: (n_docs, embedding_dim)
+
+    doc_ids = [str(doc) for doc in documentInfos.index]
+    doc_topics = documentInfos['Topic'].tolist()
+    
+    topicsKeys = topic_model.getTopicsKeys()
+    topics = {k: topic_model.getTopicWords(k) for k in topicsKeys if k != -1}
+    qrel = dict()
+    predictions = dict()
+
+    for topic, words_topic in topics.items():
+        topic_id = str(topic)
+        qrel[topic_id] = {}
+        predictions[topic_id] = {}
+
+        # Faire l'embedding des mots-clés
+        embeddingMotsCles = topic_model.getWordVectors(
+            words=[w for w in words_topic]
+        )
+        
+        # Calcul des scores
+        scores = cosine_similarity(docs_embeddings, embeddingMotsCles).mean(axis=1)
+
+        # Construction des dicts
+        predictions[topic_id] = {
+            doc_id: float(score)
+            for doc_id, score in zip(doc_ids, scores)
+        }
+        qrel[topic_id] = {
+            doc_id: 1 if t == topic else 0
+            for doc_id, t in zip(doc_ids, doc_topics)
+        }
+        
+    return qrel, predictions
