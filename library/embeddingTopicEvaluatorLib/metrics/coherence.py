@@ -1,11 +1,10 @@
-# Métrique de cohérence des topics
-
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from bertopic import BERTopic
 
 from ..models.base import TopicModelEvaluator
 
+# Métrique de cohérence des topics
 def coherence(model: TopicModelEvaluator) -> dict:
     # Récupération des identifiants de tous les topics
     keys = model.getTopicsKeys()
