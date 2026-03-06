@@ -5,6 +5,7 @@ from hdbscan import HDBSCAN
 from sklearn.cluster import KMeans
 import numpy as np
 from typing import List
+import pandas as pd
 
 from ..config.config import settings
 from .base import TopicModelEvaluator
@@ -65,6 +66,12 @@ class TopicModelEvaluatorBERTopic(TopicModelEvaluator):
     def getWordVectors(self, words: list) -> np.ndarray:
         """Récupère les embeddings pour une liste de mots donnés."""
         return self.model.embedding_model.embed_words(words)
+
+    def getDocumentsVectors(self, documents: list) -> np.ndarray:
+        """
+        Récupère les embeddings pour une liste de documents donnés.
+        """
+        return self.model.embedding_model.embed_documents(documents)
         
     def getTopicWords(self, topic_key: int) -> List[str]:
         """Extrait uniquement les mots (sans les poids) pour n'importe quel modèle."""
@@ -72,11 +79,9 @@ class TopicModelEvaluatorBERTopic(TopicModelEvaluator):
         if not topic_info: return []
                 
         return [word for word, _ in topic_info]
-        
 
     def getTopicsKeys(self) -> list :
         """Retourne les clés des topics"""
-        
         return self.model.get_topics().keys()
             
     def evaluate(self, docs):
@@ -85,3 +90,9 @@ class TopicModelEvaluatorBERTopic(TopicModelEvaluator):
         """
         topics, probs=self.model.fit_transform(docs)
         return topics, probs
+
+    def getDocumentInfos(self, docs: list) -> pd.DataFrame:
+        """
+        Retourne toutes les informations des documents
+        """
+        return self.model.get_document_info(docs)
