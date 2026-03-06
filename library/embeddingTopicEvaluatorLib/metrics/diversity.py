@@ -10,8 +10,8 @@ from ..models.base import TopicModelEvaluator
 
 def diversity(model :TopicModelEvaluator, distance : Callable[[np.ndarray], np.ndarray] = cosine_similarity, maximise : bool = True )-> float :
     """
-    Cette fonction permet de calcule la diversité moyenne entre tous les centroides des topics, mais en fonction de leurs mots de référence. 
-    Elle a besoin du modèle de production de topic qui est encapsuler dans la classe TopicModelEvaluator, de comment elle doit comparer les centroides de base, c'est une Cosine Similarity et de définir si on doit maximiser ou non cette comparaison. 
+    Cette fonction permet de calculer la diversité moyenne entre tous les centroides des topics en fonction de leurs mots de référence. 
+    La fonction requiert une instance de TopicModelEvaluator (encapsulant le modèle de topics), une métrique de comparaison des centroïdes (par défaut cosine_similarity), ainsi qu'un booléen définissant l'objectif d'optimisation (maximisation ou minimisation).
     """
 
     keys = [k for k in model.getTopicsKeys() if k != -1]
