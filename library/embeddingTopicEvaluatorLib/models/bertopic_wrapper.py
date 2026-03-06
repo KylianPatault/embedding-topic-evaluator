@@ -3,9 +3,11 @@ from bertopic import BERTopic
 from umap import UMAP
 from hdbscan import HDBSCAN
 from sklearn.cluster import KMeans
+import numpy as np
+from typing import List
 
 from ..config.config import settings
-
+from .base import TopicModelEvaluator
 
 def load_model_BERTopic(config : dict = None) -> BERTopic:
     """
@@ -47,3 +49,39 @@ def load_model_BERTopic(config : dict = None) -> BERTopic:
                            umap_model=umap_model, hdbscan_model=hdbscan_model, 
                            nr_topics=berTopic_config["nr_topics"], verbose=berTopic_config["verbose"])
     return topic_model
+
+class TopicModelEvaluatorBERTopic(TopicModelEvaluator):
+    """
+    Classe dériver de la classe TopicModelEvaluator 
+    Elle représentant un modèle de production de topics de type BERTopic
+        
+    Attributs :
+    config (dict) : la configuration du modèle     
+    """
+    def __init__(self, config : dict = None):
+        super().__init__(config)
+        self.model = load_model_BERTopic(config)
+
+    def getWordVectors(self, words: list) -> np.ndarray:
+        """Récupère les embeddings pour une liste de mots donnés."""
+        return self.model.embedding_model.embed_words(words)
+        
+    def getTopicWords(self, topic_key: int) -> List[str]:
+        """Extrait uniquement les mots (sans les poids) pour n'importe quel modèle."""
+        topic_info = self.model.get_topic(topic_key)
+        if not topic_info: return []
+                
+        return [word for word, _ in topic_info]
+        
+
+    def getTopicsKeys(self) -> list :
+        """Retourne les clés des topics"""
+        
+        return self.model.get_topics().keys()
+            
+    def evaluate(self, docs):
+        """
+        Entraîne le modèle et retourne les topics et les probabilités.
+        """
+        topics, probs=self.model.fit_transform(docs)
+        return topics, probs
