@@ -3,20 +3,32 @@
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 from bertopic import BERTopic
+from typing import Callable
 
-from ..utils.topics import getWordsTopics
 from ..utils.embeddings import calculCentroide
-def diversity(model :BERTopic)-> float :
-    keys = model.get_topics().keys()
+from ..models.base import TopicModelEvaluator
 
+def diversity(model :TopicModelEvaluator, distance : Callable[[np.ndarray], np.ndarray] = cosine_similarity, maximise : bool = True )-> float :
+    """
+    Cette fonction permet de calcule la diversité moyenne entre tous les centroides des topics, mais en fonction de leurs mots de référence. 
+    Elle a besoin du modèle de production de topic qui est encapsuler dans la classe TopicModelEvaluator, de comment elle doit comparer les centroides de base, c'est une Cosine Similarity et de définir si on doit maximiser ou non cette comparaison. 
+    """
+
+    keys = [k for k in model.getTopicsKeys() if k != -1]
     centroides = []
     for key in keys :
-        words= getWordsTopics(key,model)
-        centroides.append(calculCentroide(words,model))
+        words = model.getTopicWords(key)
+        centroides.append(calculCentroide(words, model))
     
     arrayCentroides = np.array(centroides)
 
-    sim_matrix = cosine_similarity(arrayCentroides)
-    np.fill_diagonal(sim_matrix, -1)
-    res = sim_matrix.max(axis=1) 
+    matrix = distance(arrayCentroides)
+    
+    if maximise:
+        np.fill_diagonal(matrix, -np.inf)
+        res = matrix.max(axis=1)
+    else:
+        np.fill_diagonal(matrix, np.inf)
+        res = matrix.min(axis=1)
+        
     return np.mean(res)
