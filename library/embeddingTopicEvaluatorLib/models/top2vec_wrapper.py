@@ -1,9 +1,11 @@
 # Wrapper pour le modèle Top2Vec
 from top2vec import Top2Vec
 from umap import UMAP
+import numpy as np
+from typing import List
 
 from ..config.config import settings
-
+from .base import TopicModelEvaluator
 
 def load_model_Top2Vec(config : dict = None) -> Top2Vec:
     """
@@ -32,3 +34,40 @@ def load_model_Top2Vec(config : dict = None) -> Top2Vec:
                           nr_topics=top2vec_config["nr_topics"], 
                           verbose=top2vec_config["verbose"])
     return topic_model
+
+class TopicModelEvaluatorTop2Vec(TopicModelEvaluator):
+    """
+    Classe dériver de la classe TopicModelEvaluator 
+    Elle représentant un modèle de production de topics de type Top2Vec
+        
+    Attributs :
+    config (dict) : la configuration du modèle    
+    
+    """
+    def __init__(self, config : dict = None):
+        super().__init__(config)
+        self.model = load_model_Top2Vec(config)
+
+    def getWordVectors(self, words: list) -> np.ndarray:
+        """Récupère les embeddings pour une liste de mots donnés."""
+        return np.array([self.model.word_vectors[self.model.word_dict[w]] 
+                            for w in words if w in self.model.word_dict])
+        
+    def getTopicWords(self, topic_key: int) -> List[str]:
+        """Extrait uniquement les mots (sans les poids) pour n'importe quel modèle."""
+        return list(self.model.topic_words[topic_key])
+        
+
+    def getTopicsKeys(self) -> list :
+        """Retourne les clés des topics"""
+        
+        num_topics = self.model.get_num_topics()
+        return list(range(num_topics))
+            
+    def evaluate(self, docs):
+        """
+        Entraîne le modèle et retourne les topics et les probabilités.
+        """
+        
+        return None, None
+
