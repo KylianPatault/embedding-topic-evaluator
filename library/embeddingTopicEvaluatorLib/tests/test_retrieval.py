@@ -1,17 +1,14 @@
 # Tests pour la métrique de retrieval
 
-import numpy as np
 import json
-from ..metrics.retrieval import calculate_retrieval_metrics
-
-TARGET = np.array([0, 1, 2, 3, 4])
-PROBS = np.array([[0.1, 0.2, 0.3, 0.4, 0.5],
-                  [0.5, 0.4, 0.3, 0.2, 0.1],
-                  [0.2, 0.3, 0.4, 0.5, 0.6],
-                  [0.6, 0.5, 0.4, 0.3, 0.2]])
+from ..metrics.retrieval import retrieval
+from ..models.bertopic_wrapper import TopicModelEvaluatorBERTopic
+from .__init__ import TestTopicModelEvaluator
 
 def test_retrieval_metrics():
-    metrics = calculate_retrieval_metrics(TARGET, PROBS)
+    topic_model = TopicModelEvaluatorBERTopic(config=TestTopicModelEvaluator.TEST_CONFIG)
+    topic_model.evaluate(TestTopicModelEvaluator.SAMPLE_DOCS)
+    metrics = retrieval(topic_model=topic_model, docs=TestTopicModelEvaluator.SAMPLE_DOCS)
     assert isinstance(metrics, dict)
     print(json.dumps(metrics, indent=4))
 
