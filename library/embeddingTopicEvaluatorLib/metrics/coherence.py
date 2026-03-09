@@ -4,8 +4,28 @@ from bertopic import BERTopic
 
 from ..models.base import TopicModelEvaluator
 
-# Cette fonction permet de calculer la cohérence des topics 
 def coherence(model: TopicModelEvaluator) -> dict:
+    """
+    Calcule la cohérence sémantique de chaque topic du modèle.
+
+    La cohérence mesure à quel point les mots d'un même topic sont
+    sémantiquement proches les uns des autres. Pour cela, on calcule
+    la similarité cosinus entre les embeddings de chaque paire de mots
+    du topic, puis on en fait la moyenne.
+
+    Un score élevé (proche de 1) indique que les mots du topic sont
+    fortement liés sémantiquement, donc que le topic est cohérent.
+    Un score faible indique que les mots sont peu liés entre eux.
+
+    Args:
+        model: Instance de TopicModelEvaluator fournissant les topics
+               et les embeddings des mots.
+
+    Returns:
+        dict: Dictionnaire {topic_id: score_de_cohérence} où chaque
+              score est un float entre -1 et 1 (moyenne des similarités
+              cosinus entre toutes les paires de mots du topic).
+    """
     # Récupération des identifiants de tous les topics
     keys = model.getTopicsKeys()
     res = dict()
