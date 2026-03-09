@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "embeddingTopicEvaluatorLib"
+version = "0.2.0"
+dependencies = [
+    'numpy>=2.2.6',
+    'pandas>=2.3.3',
+    'scikit-learn>=1.7.2',
+    'sentence-transformers>=5.2.3',
+    'top2vec>=1.0.31',
+    'bertopic>=0.17.4',
+    'pytrec_eval>=0.5',
+    'umap-learn>=0.5.11',
+    'hdbscan>=0.8.41',
+    'scipy>=1.15.3',
+    'tqdm>=4.66.4',
+    'matplotlib>=3.9.0',
+    'spacy>=3.8.11',
+]
