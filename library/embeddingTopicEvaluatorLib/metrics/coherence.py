@@ -4,7 +4,7 @@ from bertopic import BERTopic
 
 from ..models.base import TopicModelEvaluator
 
-# Métrique de cohérence des topics
+# Cette fonction permet de calculer la cohérence des topics
 def coherence(model: TopicModelEvaluator) -> dict:
     # Récupération des identifiants de tous les topics
     keys = model.getTopicsKeys()
