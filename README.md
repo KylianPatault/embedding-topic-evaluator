@@ -112,27 +112,27 @@ Les calculs d'embeddings partagés (e.g. `calculCentroide`) sont isolés dans `u
 
 ### 20 Newsgroups
 
-Le dataset 20 Newsgroups est un ensemble de données de 20 000 articles de presse répartis en 20 catégories. Il est utilisé pour évaluer les performances des modèles de classification de texte.
+Le dataset 20 Newsgroups est une collection de 18 846 articles de newsgroups répartis en 20 catégories thématiques (politique, religion, sport, science, informatique, etc.). Il constitue un benchmark classique pour la classification et le clustering de texte.
 
 ### AG News
 
-Le dataset AG News est un ensemble de données de 120 000 articles de presse répartis en 4 catégories. Il est utilisé pour évaluer les performances des modèles de classification de texte.
+Le dataset AG News regroupe 127 600 articles de presse (120 000 train + 7 600 test) issus de plus de 2 000 sources, répartis en 4 catégories : *World*, *Sports*, *Business* et *Sci/Tech*. Il est fréquemment utilisé comme benchmark de classification de texte court. Nous utilisons ici la version de train du dataset.
 
 ### ArXiv
 
-Le dataset ArXiv est un ensemble de données de 100 000 articles de presse répartis en 4 catégories. Il est utilisé pour évaluer les performances des modèles de classification de texte.
+Le dataset ArXiv est un ensemble de données de 31 articles de presse répartis en 4 catégories. Il est utilisé pour évaluer les performances des modèles de classification de texte.
 
 ### Big Patent
 
-Le dataset Big Patent est un ensemble de données de 100 000 articles de presse répartis en 4 catégories. Il est utilisé pour évaluer les performances des modèles de classification de texte.
+Le dataset Big Patent Clustering (variante Jina AI) est un sous-ensemble du dataset Big Patent, contenant des brevets répartis en 9 catégories CPC (Cooperative Patent Classification). Il est conçu pour le clustering de documents longs. Nous utilisons ici la version "Big Patent Clustering" du dataset contenant 3 documents.
 
 ### BioRxiv
 
-Le dataset BioRxiv est un ensemble de données de 100 000 articles de presse répartis en 4 catégories. Il est utilisé pour évaluer les performances des modèles de classification de texte.
+Le dataset BioRxiv (variante MTEB `biorxiv-clustering-p2p`) contient 53 787 paires titre+résumé d'articles de biologie préprint, répartis en 26 catégories disciplinaires (neurosciences, microbiologie, génomique, bioinformatique, etc.). Nous utilisons ici la variante "biorxiv-clustering-p2p" du dataset.
 
 ### ClusTREC-Covid
 
-Le dataset ClusTREC-Covid est un ensemble de données de 100 000 articles de presse répartis en 4 catégories. Il est utilisé pour évaluer les performances des modèles de classification de texte.
+Le dataset ClusTREC-Covid est une adaptation du dataset TREC-COVID pour le clustering. Il contient 6 852 articles scientifiques sur la COVID-19 (titres + résumés), regroupés en 50 topics thématiques (e.g., *réponse du coronavirus aux changements météorologiques*). Nous utilisons ici la version "ClusTREC-Covid" du dataset.
 
 ## Résultats
 
