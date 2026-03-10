@@ -9,3 +9,4 @@ gensim
 spacy
 ipykernel
 pytest
+label-studio>=1.9.0
