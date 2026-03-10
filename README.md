@@ -82,8 +82,6 @@ embeddingTopicEvaluatorLib/
 │   └── retrieval.py
 ├── utils/           # Fonctions utilitaires partagées
 │   └── embeddings.py
-├── evaluation/      # Orchestration de l'évaluation
-│   └── evaluator.py
 ├── config/          # Configuration globale
 └── tests/           # Tests unitaires
 ```
@@ -94,7 +92,7 @@ embeddingTopicEvaluatorLib/
 
 Chaque modèle de topics (BERTopic, Top2Vec) est encapsulé dans un **wrapper** héritant de la classe de base `TopicModelEvaluator`. Ce pattern a été choisi pour :
 
-- **Uniformiser l'interface** : tous les wrappers exposent la même API (`getTopicWords()`, `getTopicsKeys()`, `getWordVectors()`, `getDocumentInfos()`, etc.), ce qui permet aux métriques d'être agnostiques au modèle sous-jacent.
+- **Standardiser l'interface** : l'unification des méthodes (`getTopicWords()`, `getTopicsKeys()`, etc.) permet aux métriques de fonctionner de manière indépendante du modèle utilisé.
 - **Faciliter l'extensibilité** : ajouter un nouveau modèle revient à créer un nouveau wrapper implémentant `TopicModelEvaluator`, sans modifier les métriques existantes.
 - **Isoler la complexité** : chaque wrapper gère les spécificités de son modèle (API différente de BERTopic vs Top2Vec) de manière transparente pour le reste du code.
 
