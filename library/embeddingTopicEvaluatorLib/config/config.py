@@ -1,6 +1,10 @@
+from sentence_transformers import SentenceTransformer
+
 class DefaultSettings():
     """Configuration par défaut des modèles"""
-
+    
+    EMBEDDING_MODEL = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+    
     BERTOPIC_CONFIG_HDBSCAN = {
         "UMAP" : {
             "n_neighbors" : 50, # Taille du voisinage local (plus élevé = vision plus globale)
@@ -15,6 +19,8 @@ class DefaultSettings():
             "cluster_selection_method" : "eom", # Sélection des clusters les plus denses
             "prediction_data" : True # Permet de classer de nouveaux documents
         },
+        "EmbeddingModel" : EMBEDDING_MODEL,
+    
         "BERTopic" : {
             # Modèle de Sentence Transformers utilisé pour les embeddings
             "embedding_model" : "all-mpnet-base-v2",
@@ -27,6 +33,7 @@ class DefaultSettings():
         "UMAP" : {
             "n_neighbors" : 50, # Taille du voisinage local (plus élevé = vision plus globale)
             "n_components" : 10, # Dimension de sortie pour le clustering
+            "min_dist" : 0.0, # Distance min entre les points
             "metric" : "cosine" # Métrique de distance
         },
         "KMeans" : {
@@ -47,6 +54,7 @@ class DefaultSettings():
             "min_dist" : 0.0, # Distance min entre les points
             "metric" : "cosine" # Métrique de distance
         },
+        "EmbeddingModel" : EMBEDDING_MODEL,
         "TOP2VEC" : {
             # Modèle de Sentence Transformers utilisé pour les embeddings
             "embedding_model" : "paraphrase-multilingual-MiniLM-L12-v2",
