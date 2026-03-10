@@ -53,7 +53,11 @@ class TopicModelEvaluatorTop2Vec(TopicModelEvaluator):
         super().__init__(config)
         self.model = load_model_Top2Vec(documents, config)
         self.has_reduction = hasattr(self.model, 'hierarchy')
-        self.n_components = config["TOP2VEC"]["n_components"]
+        if config is None :
+            self.n_components = 10
+        else :
+            self.n_components = config["TOP2VEC"]["n_components"]
+            
 
     def getWordVectors(self, words: list) -> np.ndarray:
         """Récupère les embeddings pour une liste de mots donnés."""
@@ -74,8 +78,11 @@ class TopicModelEvaluatorTop2Vec(TopicModelEvaluator):
     
     def getTopicWords(self, topic_key: int) -> List[str]:
         """Extrait uniquement les mots (sans les poids) pour n'importe quel modèle."""
-        words, _, _ = self.model.get_topics(reduced=self.has_reduction, num_words=self.n_components)
-        return list(words[topic_key])
+        words, _, _ = self.model.get_topics(reduced=self.has_reduction)
+        
+        topic_words = list(words[topic_key])
+        
+        return topic_words[:self.n_components]
         
 
     def getTopicsKeys(self) -> list :
@@ -107,8 +114,7 @@ class TopicModelEvaluatorTop2Vec(TopicModelEvaluator):
         """
         topic_labels, topic_scores = self.evaluate(docs)
         
-        # 2. Récupérer les noms de topics (ex: "0_word1_word2_word3")
-        # Top2Vec ne génère pas ces chaînes par défaut, on va les créer
+        # Récupérer les noms de topics
         num_topics = len(self.getTopicsKeys())
         topic_names = []
         for i in range(num_topics):
@@ -122,7 +128,7 @@ class TopicModelEvaluatorTop2Vec(TopicModelEvaluator):
             for label in topic_labels
         ]
 
-        # 3. Construire le DataFrame au format exact de BERTopic
+        # Construire le DataFrame au format exact de BERTopic
         df = pd.DataFrame({
             "Document": docs,
             "Topic": topic_labels,
