@@ -46,5 +46,11 @@ class TopicModelEvaluator:
     def getDocumentInfos(self, docs: list) -> pd.DataFrame:
         """
         Retourne toutes les informations des documents
+        dans un dataframe Pandas avec les colonnes suivantes :
+            - Document (str) : Le text original du document.
+            - Topic (int) : L'identifiant du topic assigné. 
+            - Name (str) : Nom descriptif du topic.
+            - Probability (float) : Score de confiance/proximité (cosinus) entre le document et le centre de son topic.
+            - Representative_Doc (bool) : Indicateur booléen. True si le document  est l'un des plus centraux du cluster.
         """
         return None

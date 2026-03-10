@@ -27,7 +27,6 @@ class DefaultSettings():
         "UMAP" : {
             "n_neighbors" : 50, # Taille du voisinage local (plus élevé = vision plus globale)
             "n_components" : 10, # Dimension de sortie pour le clustering
-            "min_dist" : 0.0, # Distance min entre les points
             "metric" : "cosine" # Métrique de distance
         },
         "KMeans" : {
@@ -44,16 +43,17 @@ class DefaultSettings():
     TOP2VEC_CONFIG = {
         "UMAP" : {
             "n_neighbors" : 15, # Taille du voisinage local (plus élevé = vision plus globale)
-            "n_components" : 5, # Dimension de sortie pour le clustering
+            "n_components" : 10, # Dimension de sortie pour le clustering
             "min_dist" : 0.0, # Distance min entre les points
             "metric" : "cosine" # Métrique de distance
         },
         "TOP2VEC" : {
             # Modèle de Sentence Transformers utilisé pour les embeddings
-            "embedding_model" : "all-mpnet-base-v2",
+            "embedding_model" : "paraphrase-multilingual-MiniLM-L12-v2",
             "min_count" : 5, # Nombre minimum d'occurrences d'un mot pour être pris en compte
             "nr_topics" : 50, # Nombre de topics à générer
-            "verbose" : True # Affiche la barre de progression
+            "verbose" : True, # Affiche la barre de progression
+            "n_components" : 10 # Nombre de mots par Topics
         }
     }
     
