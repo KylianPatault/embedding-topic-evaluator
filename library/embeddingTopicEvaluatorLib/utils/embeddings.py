@@ -10,4 +10,4 @@ def calculCentroide(word_topics :list, model :TopicModelEvaluator) -> float :
     Pour ce faire elle a besoin des mots qui définissent le topic et du modèle de production de topic qui est encapsuler dans la classe TopicModelEvaluator.
     """
     word_embeddings = model.getWordVectors(word_topics)
-    return np.mean(word_embeddings,axis=1)
+    return np.mean(word_embeddings,axis=0)
