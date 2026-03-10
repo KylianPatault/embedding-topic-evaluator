@@ -7,7 +7,7 @@ import pandas as pd
 from ..config.config import settings
 from .base import TopicModelEvaluator
 
-def load_model_Top2Vec(documents: list, config : dict = None) -> Top2Vec:
+def load_model_Top2Vec(documents: list, config: dict = None) -> Top2Vec:
     """
     Cette fonction permet de charger un modèle Top2Vec à partir d'un fichier de configuration.
     Si le fichier de configuration n'est pas fourni, la configuration par défaut est chargée (située dans le fichier config/config.py).
@@ -49,7 +49,7 @@ class TopicModelEvaluatorTop2Vec(TopicModelEvaluator):
     config (dict) : la configuration du modèle    
     
     """
-    def __init__(self, documents, config : dict = None):
+    def __init__(self, documents, config: dict = None):
         super().__init__(config)
         self.model = load_model_Top2Vec(documents, config)
         self.has_reduction = hasattr(self.model, 'hierarchy')
@@ -57,6 +57,9 @@ class TopicModelEvaluatorTop2Vec(TopicModelEvaluator):
             self.n_components = 10
         else :
             self.n_components = config["TOP2VEC"]["n_components"]
+
+            if "EmbeddingModel" in config.keys():
+                self.embeddingModel = config["EmbeddingModel"]
             
 
     def getWordVectors(self, words: list) -> np.ndarray:
@@ -64,16 +67,19 @@ class TopicModelEvaluatorTop2Vec(TopicModelEvaluator):
         return np.array([self.model.word_vectors[self.model.word_indexes[w]] 
                      for w in words if w in self.model.word_indexes])
         
-    def getDocumentsVectors(self, documents: list = None) -> np.ndarray:
+    def getDocumentsVectors(self, documents: list = None, useEmbeddingModel: bool = True) -> np.ndarray:
         """
         Récupère les embeddings pour les documents.
         Si documents est None, retourne les vecteurs du modèle entraîné.
         """
         if documents is None:
             return self.model.document_vectors
-        
-        # Pour de nouveaux documents, Top2Vec utilise sa propre méthode
-        return self.model.embed(documents)
+            
+        if self.embeddingModel is not None and useEmbeddingModel :
+            return self.embeddingModel.encode(documents)
+        else:
+            # Pour de nouveaux documents, Top2Vec utilise sa propre méthode
+            return self.model.embed(documents)
 
     
     def getTopicWords(self, topic_key: int) -> List[str]:

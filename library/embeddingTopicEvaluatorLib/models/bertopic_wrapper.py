@@ -10,7 +10,7 @@ import pandas as pd
 from ..config.config import settings
 from .base import TopicModelEvaluator
 
-def load_model_BERTopic(config : dict = None) -> BERTopic:
+def load_model_BERTopic(config: dict = None) -> BERTopic:
     """
     Cette fonction permet de charger un modèle BERTopic à partir d'un fichier de configuration.
     Si le fichier de configuration n'est pas fourni, la configuration par défaut est chargée (située dans le fichier config/config.py).
@@ -59,19 +59,25 @@ class TopicModelEvaluatorBERTopic(TopicModelEvaluator):
     Attributs :
     config (dict) : la configuration du modèle     
     """
-    def __init__(self, config : dict = None):
+    def __init__(self, config: dict = None):
         super().__init__(config)
         self.model = load_model_BERTopic(config)
+        if "EmbeddingModel" in config.keys():
+            self.embeddingModel = config["EmbeddingModel"]
+            
 
     def getWordVectors(self, words: list) -> np.ndarray:
         """Récupère les embeddings pour une liste de mots donnés."""
         return self.model.embedding_model.embed_words(words)
 
-    def getDocumentsVectors(self, documents: list) -> np.ndarray:
+    def getDocumentsVectors(self, documents: list ,useEmbeddingModel: bool = True) -> np.ndarray:
         """
         Récupère les embeddings pour une liste de documents donnés.
         """
-        return self.model.embedding_model.embed_documents(documents)
+        if self.embeddingModel is not None and useEmbeddingModel :
+            return self.embeddingModel.encode(documents)
+        else:
+            return self.model.embedding_model.embed_documents(documents)
         
     def getTopicWords(self, topic_key: int) -> List[str]:
         """Extrait uniquement les mots (sans les poids) pour n'importe quel modèle."""

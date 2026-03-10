@@ -8,7 +8,8 @@ from typing import Callable
 from ..utils.embeddings import calculCentroide
 from ..models.base import TopicModelEvaluator
 
-def diversity(model :TopicModelEvaluator, distance : Callable[[np.ndarray], np.ndarray] = cosine_similarity, maximise : bool = True )-> float :
+def diversity(model: TopicModelEvaluator, distance: Callable[[np.ndarray], np.ndarray] = cosine_similarity, 
+              maximise: bool = True, useEmbeddingModel: bool = True )-> float :
     """
     Cette fonction permet de calculer la diversité moyenne entre tous les centroides des topics en fonction de leurs mots de référence. 
     La fonction requiert une instance de TopicModelEvaluator (encapsulant le modèle de topics), une métrique de comparaison des centroïdes (par défaut cosine_similarity), ainsi qu'un booléen définissant l'objectif d'optimisation (maximisation ou minimisation).
@@ -18,7 +19,11 @@ def diversity(model :TopicModelEvaluator, distance : Callable[[np.ndarray], np.n
     centroides = []
     for key in keys :
         words = model.getTopicWords(key)
-        centroides.append(calculCentroide(words, model))
+        if useEmbeddingModel :
+            topic_words = " ".join(words)
+            centroides.append(model.getDocumentsVectors(topic_words,useEmbeddingModel))
+        else:
+            centroides.append(calculCentroide(words, model))
     
     arrayCentroides = np.array(centroides)
 
