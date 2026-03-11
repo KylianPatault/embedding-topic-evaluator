@@ -62,9 +62,12 @@ class TopicModelEvaluatorTop2Vec(TopicModelEvaluator):
                 self.embeddingModel = config["EmbeddingModel"]
             
 
-    def getWordVectors(self, words: list) -> np.ndarray:
+    def getWordVectors(self, words: list, useEmbeddingModel: bool = True) -> np.ndarray:
         """Récupère les embeddings pour une liste de mots donnés."""
-        return np.array([self.model.word_vectors[self.model.word_indexes[w]] 
+        if self.embeddingModel is not None and useEmbeddingModel :
+            return self.embeddingModel.encode(words)
+        else:
+            return np.array([self.model.word_vectors[self.model.word_indexes[w]] 
                      for w in words if w in self.model.word_indexes])
         
     def getDocumentsVectors(self, documents: list = None, useEmbeddingModel: bool = True) -> np.ndarray:

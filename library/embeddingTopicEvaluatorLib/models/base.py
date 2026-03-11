@@ -13,13 +13,13 @@ class TopicModelEvaluator:
     def __init__(self, config : dict = None):
         self.model = None
 
-    def getWordVectors(self, words: list) -> np.ndarray:
+    def getWordVectors(self, words: list, useEmbeddingModel: bool = True) -> np.ndarray:
         """
         Récupère les embeddings pour une liste de mots donnés.
         """
         return np.array()
 
-    def getDocumentsVectors(self, documents: list) -> np.ndarray:
+    def getDocumentsVectors(self, documents: list, useEmbeddingModel: bool = True) -> np.ndarray:
         """
         Récupère les embeddings pour une liste de documents donnés.
         """
