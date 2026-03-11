@@ -58,7 +58,7 @@ def prepare_data(topic_model: TopicModelEvaluator, docs: list, useEmbeddingModel
         )
         
         topic_sentence = " ".join(words_topic)
-        embeddingMotsCles = topic_model.getDocumentsVectors(topic_sentence ,useEmbeddingModel) 
+        embeddingMotsCles = topic_model.getDocumentsVectors(topic_sentence, useEmbeddingModel) 
         embeddingMotsCles = embeddingMotsCles.reshape(1, -1)
         
         # Calcul des scores
