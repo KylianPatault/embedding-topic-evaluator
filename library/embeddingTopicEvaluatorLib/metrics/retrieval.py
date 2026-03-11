@@ -6,7 +6,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from ..models.base import TopicModelEvaluator
 
-def retrieval(topic_model: TopicModelEvaluator, docs: list) -> {}:
+def retrieval(topic_model: TopicModelEvaluator, docs: list, useEmbeddingModel: bool = True ) -> {}:
     """
     Calcule les métriques de "retrieval" en préparant le dictionnaire qrel et run à l'aide de la bibliothèque pytrec_eval.
     Métriques : 
@@ -16,14 +16,14 @@ def retrieval(topic_model: TopicModelEvaluator, docs: list) -> {}:
     return: dictionnaire des métriques
     """
     
-    qrel, predictions = prepare_data(topic_model=topic_model, docs=docs)
+    qrel, predictions = prepare_data(topic_model=topic_model, docs=docs, useEmbeddingModel=useEmbeddingModel)
 
     evaluator = pytrec_eval.RelevanceEvaluator(qrel, {'map', 'ndcg'})
     results = evaluator.evaluate(predictions)
     
     return results
 
-def prepare_data(topic_model: TopicModelEvaluator, docs: list) -> tuple[dict, dict]:
+def prepare_data(topic_model: TopicModelEvaluator, docs: list, useEmbeddingModel: bool = True ) -> tuple[dict, dict]:
     """
     Prépare le dictionnaire qrel et run pour la bibliothèque pytrec_eval
     topic_model: modèle TopicModelEvaluator
@@ -57,9 +57,12 @@ def prepare_data(topic_model: TopicModelEvaluator, docs: list) -> tuple[dict, di
             words=[w for w in words_topic]
         )
         
+        topic_sentence = " ".join(words_topic)
+        embeddingMotsCles = topic_model.getDocumentsVectors(topic_sentence ,useEmbeddingModel) 
+        embeddingMotsCles = embeddingMotsCles.reshape(1, -1)
+        
         # Calcul des scores
-        scores = cosine_similarity(docs_embeddings, embeddingMotsCles).mean(axis=1)
-
+        scores = cosine_similarity(docs_embeddings, embeddingMotsCles)
         # Construction des dicts
         predictions[topic_id] = {
             doc_id: float(score)
