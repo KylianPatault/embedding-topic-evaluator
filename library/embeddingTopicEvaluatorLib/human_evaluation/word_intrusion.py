@@ -75,8 +75,10 @@ def word_intrusion_score(annotations: list[dict]) -> float:
 
     for task in annotations:
         ground_truth = task.get("data", {}).get("intruder")
-        print(task.get("annotations", [{}]))
-        results = task.get("annotations", [{}])[0].get("result", [])
+        task_annotations = task.get("annotations", [])
+        if not task_annotations:
+            continue
+        results = task_annotations[0].get("result", [])
         if not results:
             continue
         try:
