@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
 from ..models.base import TopicModelEvaluator
+from ..utils.embeddings import calculCentroide
 
 
 def generate_tasks(model: TopicModelEvaluator, n_words: int = 5) -> list[dict]:
@@ -28,16 +29,15 @@ def generate_tasks(model: TopicModelEvaluator, n_words: int = 5) -> list[dict]:
         target_words = all_topics[topic_key]
 
         # Centroïde du topic cible
-        vectors = model.getWordVectors(target_words)
-        centroid = np.mean(vectors, axis=0, keepdims=True)
+        centroid = calculCentroide(word_topics=target_words, model=model)
 
         # Candidats : top mots de tous les autres topics, absents du topic cible
         target_set = set(target_words)
         candidates = [
             w for k, words in all_topics.items()
-            if k != topic_key
+            if k != topic_key               # Uniquement les autres topics
             for w in words
-            if w not in target_set
+            if w not in target_set          # Uniquement les mots n'appartenant pas au topic cible
         ]
 
         # Choix du mot le moins similaire au centroïde cible
