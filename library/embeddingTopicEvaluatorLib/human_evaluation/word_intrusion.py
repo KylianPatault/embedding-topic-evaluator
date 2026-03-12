@@ -9,41 +9,88 @@ from ..models.base import TopicModelEvaluator
 from ..utils.embeddings import calculCentroide
 
 
-def generate_tasks(model: TopicModelEvaluator, n_words: int = 5) -> list[dict]:
+def generate_tasks(
+    model: TopicModelEvaluator,
+    n_words: int = 5,
+    top_distant_pct: float = 0.2,
+    top_active_pct: float = 0.2,
+    useModelEmbeddings: bool = False,
+) -> list[dict]:
     """
     Génère les tâches du Word Intrusion Test pour Label Studio.
 
     Pour chaque topic :
     - Prend les n_words premiers mots du topic.
-    - Sélectionne un mot intrus : le mot des autres topics le moins similaire
-      au centroïde du topic cible.
+    - Sélectionne un mot intrus parmi les candidats des autres topics,
+      en appliquant deux filtres successifs :
+        1. top_distant_pct : ne conserve que les X% de candidats les plus
+           éloignés du centroïde du topic cible (peu similaires au topic cible).
+        2. top_active_pct  : parmi ceux-ci, ne conserve que les X% de candidats
+           les mieux classés dans leur propre topic (très représentatifs d'un
+           autre topic).
+    - Tire l'intrus au hasard parmi les candidats restants.
     - Mélange les n_words + 1 mots aléatoirement.
+
+    Args:
+        model           : Instance de TopicModelEvaluator entraîné.
+        n_words         : Nombre de mots du topic à présenter (hors intrus).
+        top_distant_pct : Fraction [0, 1] des candidats les plus éloignés du
+                          centroïde cible à conserver. 1.0 = tous les candidats.
+        top_active_pct  : Fraction [0, 1] des candidats les mieux classés dans
+                          leur topic d'origine à conserver. 1.0 = tous.
 
     Retourne une liste de dicts importables directement dans Label Studio.
     """
     keys = [k for k in model.getTopicsKeys() if k != -1]
-    all_topics = {k: model.getTopicWords(k)[:n_words] for k in keys}
+    # Pré-calcul : top mots + leur rang (index dans la liste) pour chaque topic
+    all_topics = {k: model.getTopicWords(k)[:n_words * 2] for k in keys}
     tasks = []
 
     for topic_key in keys:
-        target_words = all_topics[topic_key]
+        target_words = all_topics[topic_key][:n_words]
 
         # Centroïde du topic cible
-        centroid = calculCentroide(word_topics=target_words, model=model)
+        centroid = calculCentroide(word_topics=target_words, model=model, useModelEmbeddings=useModelEmbeddings)
 
-        # Candidats : top mots de tous les autres topics, absents du topic cible
+        # Candidats : top mots des autres topics absents du topic cible
+        # On mémorise aussi le rang du mot dans son propre topic (0 = le meilleur)
         target_set = set(target_words)
-        candidates = [
-            w for k, words in all_topics.items()
-            if k != topic_key               # Uniquement les autres topics
-            for w in words
-            if w not in target_set          # Uniquement les mots n'appartenant pas au topic cible
-        ]
+        candidates = []       # liste de mots
+        candidate_ranks = []  # rang du mot dans son topic d'origine (plus petit = meilleur)
 
-        # Choix du mot le moins similaire au centroïde cible
+        for k, words in all_topics.items():
+            if k == topic_key:
+                continue
+            for rank, word in enumerate(words):
+                if word not in target_set:
+                    candidates.append(word)
+                    candidate_ranks.append(rank)
+
+        if not candidates:
+            continue
+
         candidate_vectors = model.getWordVectors(candidates)
         similarities = cosine_similarity(candidate_vectors, centroid).flatten()
-        intruder = candidates[int(np.argmin(similarities))]
+
+        n = len(candidates)
+
+        # np.ceil permet d'arrondir au supérieur
+        k_distant = int(np.ceil(n * top_distant_pct))
+        k_active = int(np.ceil(n * top_active_pct))
+
+        # Les plus éloignés du centroïde cible (similarité faible → ordre croissant)
+        les_plus_eloignes = top_k_indices(similarities, k_distant if k_distant > 0 else 1, ascending=True)
+        # Les mieux classés dans leur topic d'origine (rang faible → ordre croissant)
+        les_plus_actifs = top_k_indices(candidate_ranks, k_active if k_active > 0 else 1, ascending=True)
+
+        # Intersection des deux ensembles
+        candidats_retenus = list(les_plus_eloignes & les_plus_actifs)
+        if not candidats_retenus:
+            # Si aucun candidat retenu avec l'intersection, on élargit à l'union
+            candidats_retenus = list(les_plus_eloignes | les_plus_actifs)
+
+        # On choisit un intrus au hasard parmi les candidats retenus
+        intruder = candidates[random.choice(candidats_retenus)]
 
         # Mélange et encodage
         all_words = target_words + [intruder]
@@ -56,6 +103,12 @@ def generate_tasks(model: TopicModelEvaluator, n_words: int = 5) -> list[dict]:
         tasks.append(task)
 
     return tasks
+
+
+def top_k_indices(scores: np.ndarray, k: int, ascending: bool) -> set[int]:
+    """Retourne les indices des k meilleurs scores (croissant ou décroissant)."""
+    sorted_indices = np.argsort(scores) if ascending else np.argsort(scores)[::-1]
+    return set(sorted_indices[:k].tolist())
 
 
 def save_tasks(tasks: list[dict], path: str) -> None:
