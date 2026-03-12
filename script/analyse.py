@@ -61,7 +61,7 @@ def generate_bertopic_models(param, base_config, docs):
 
 def evaluate_all_models(topic_models, docs):
     """
-    Évalue une liste de modèles Top2Vec sur un corpus de documents.
+    Évalue une liste de modèles sur un corpus de documents.
     """
     topics_hdbscans = []
     probs_hdbscans = []
