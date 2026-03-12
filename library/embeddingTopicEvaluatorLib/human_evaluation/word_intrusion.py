@@ -14,7 +14,7 @@ def generate_tasks(
     n_words: int = 5,
     top_distant_pct: float = 0.2,
     top_active_pct: float = 0.2,
-    useModelEmbeddings: bool = False,
+    useEmbeddingModel: bool = False,
 ) -> list[dict]:
     """
     Génère les tâches du Word Intrusion Test pour Label Studio.
@@ -50,7 +50,7 @@ def generate_tasks(
         target_words = all_topics[topic_key][:n_words]
 
         # Centroïde du topic cible
-        centroid = calculCentroide(word_topics=target_words, model=model, useModelEmbeddings=useModelEmbeddings)
+        centroid = calculCentroide(word_topics=target_words, model=model, useEmbeddingModel=useEmbeddingModel).reshape(1, -1)
 
         # Candidats : top mots des autres topics absents du topic cible
         # On mémorise aussi le rang du mot dans son propre topic (0 = le meilleur)

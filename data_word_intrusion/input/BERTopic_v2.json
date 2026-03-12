@@ -1,0 +1,492 @@
+[
+  {
+    "topic_id": 0,
+    "intruder": "locust",
+    "word_0": "oracle",
+    "word_1": "software",
+    "word_2": "locust",
+    "word_3": "ibm",
+    "word_4": "peoplesoft",
+    "word_5": "microsoft"
+  },
+  {
+    "topic_id": 1,
+    "intruder": "species",
+    "word_0": "stocks",
+    "word_1": "prices",
+    "word_2": "reuters",
+    "word_3": "oil",
+    "word_4": "dollar",
+    "word_5": "species"
+  },
+  {
+    "topic_id": 2,
+    "intruder": "turkey",
+    "word_0": "turkey",
+    "word_1": "no",
+    "word_2": "the",
+    "word_3": "season",
+    "word_4": "ap",
+    "word_5": "game"
+  },
+  {
+    "topic_id": 3,
+    "intruder": "11",
+    "word_0": "in",
+    "word_1": "11",
+    "word_2": "iraqi",
+    "word_3": "baghdad",
+    "word_4": "iraq",
+    "word_5": "killed"
+  },
+  {
+    "topic_id": 4,
+    "intruder": "paypal",
+    "word_0": "round",
+    "word_1": "paypal",
+    "word_2": "the",
+    "word_3": "his",
+    "word_4": "at",
+    "word_5": "cup"
+  },
+  {
+    "topic_id": 5,
+    "intruder": "airways",
+    "word_0": "the",
+    "word_1": "red",
+    "word_2": "yankees",
+    "word_3": "sox",
+    "word_4": "league",
+    "word_5": "airways"
+  },
+  {
+    "topic_id": 6,
+    "intruder": "spaceshipone",
+    "word_0": "microsoft",
+    "word_1": "internet",
+    "word_2": "search",
+    "word_3": "spaceshipone",
+    "word_4": "web",
+    "word_5": "google"
+  },
+  {
+    "topic_id": 7,
+    "intruder": "ibm",
+    "word_0": "darfur",
+    "word_1": "in",
+    "word_2": "rebels",
+    "word_3": "sudan",
+    "word_4": "un",
+    "word_5": "ibm"
+  },
+  {
+    "topic_id": 8,
+    "intruder": "locusts",
+    "word_0": "arsenal",
+    "word_1": "league",
+    "word_2": "manchester",
+    "word_3": "united",
+    "word_4": "champions",
+    "word_5": "locusts"
+  },
+  {
+    "topic_id": 9,
+    "intruder": "trade",
+    "word_0": "trade",
+    "word_1": "palestinian",
+    "word_2": "prime",
+    "word_3": "minister",
+    "word_4": "arafat",
+    "word_5": "sharon"
+  },
+  {
+    "topic_id": 10,
+    "intruder": "locusts",
+    "word_0": "locusts",
+    "word_1": "sales",
+    "word_2": "quarter",
+    "word_3": "fullquote",
+    "word_4": "profit",
+    "word_5": "percent"
+  },
+  {
+    "topic_id": 11,
+    "intruder": "fannie",
+    "word_0": "sprint",
+    "word_1": "mobile",
+    "word_2": "wireless",
+    "word_3": "fannie",
+    "word_4": "phone",
+    "word_5": "nokia"
+  },
+  {
+    "topic_id": 12,
+    "intruder": "united",
+    "word_0": "apple",
+    "word_1": "ipod",
+    "word_2": "united",
+    "word_3": "dvd",
+    "word_4": "music",
+    "word_5": "file"
+  },
+  {
+    "topic_id": 13,
+    "intruder": "veerappan",
+    "word_0": "airways",
+    "word_1": "airline",
+    "word_2": "air",
+    "word_3": "airlines",
+    "word_4": "veerappan",
+    "word_5": "delta"
+  },
+  {
+    "topic_id": 14,
+    "intruder": "darfur",
+    "word_0": "darfur",
+    "word_1": "bank",
+    "word_2": "its",
+    "word_3": "to",
+    "word_4": "buy",
+    "word_5": "disney"
+  },
+  {
+    "topic_id": 15,
+    "intruder": "wine",
+    "word_0": "space",
+    "word_1": "spacecraft",
+    "word_2": "station",
+    "word_3": "wine",
+    "word_4": "nasa",
+    "word_5": "moon"
+  },
+  {
+    "topic_id": 16,
+    "intruder": "of",
+    "word_0": "uranium",
+    "word_1": "iran",
+    "word_2": "north",
+    "word_3": "of",
+    "word_4": "korea",
+    "word_5": "nuclear"
+  },
+  {
+    "topic_id": 17,
+    "intruder": "vaccine",
+    "word_0": "japan",
+    "word_1": "hurricane",
+    "word_2": "typhoon",
+    "word_3": "storm",
+    "word_4": "ivan",
+    "word_5": "vaccine"
+  },
+  {
+    "topic_id": 18,
+    "intruder": "veerappan",
+    "word_0": "olympic",
+    "word_1": "gold",
+    "word_2": "athens",
+    "word_3": "medal",
+    "word_4": "olympics",
+    "word_5": "veerappan"
+  },
+  {
+    "topic_id": 19,
+    "intruder": "darfur",
+    "word_0": "eu",
+    "word_1": "china",
+    "word_2": "taiwan",
+    "word_3": "wto",
+    "word_4": "trade",
+    "word_5": "darfur"
+  },
+  {
+    "topic_id": 20,
+    "intruder": "deficit",
+    "word_0": "cricket",
+    "word_1": "australia",
+    "word_2": "deficit",
+    "word_3": "england",
+    "word_4": "test",
+    "word_5": "india"
+  },
+  {
+    "topic_id": 21,
+    "intruder": "airways",
+    "word_0": "kerry",
+    "word_1": "tax",
+    "word_2": "president",
+    "word_3": "bush",
+    "word_4": "airways",
+    "word_5": "ap"
+  },
+  {
+    "topic_id": 22,
+    "intruder": "wireless",
+    "word_0": "insurance",
+    "word_1": "marsh",
+    "word_2": "wireless",
+    "word_3": "enron",
+    "word_4": "fannie",
+    "word_5": "mae"
+  },
+  {
+    "topic_id": 23,
+    "intruder": "arafat",
+    "word_0": "eu",
+    "word_1": "european",
+    "word_2": "france",
+    "word_3": "arafat",
+    "word_4": "french",
+    "word_5": "turkey"
+  },
+  {
+    "topic_id": 24,
+    "intruder": "eclipse",
+    "word_0": "crimes",
+    "word_1": "trial",
+    "word_2": "stewart",
+    "word_3": "bryant",
+    "word_4": "prison",
+    "word_5": "eclipse"
+  },
+  {
+    "topic_id": 25,
+    "intruder": "vaccine",
+    "word_0": "coup",
+    "word_1": "thatcher",
+    "word_2": "vaccine",
+    "word_3": "colombia",
+    "word_4": "pinochet",
+    "word_5": "chavez"
+  },
+  {
+    "topic_id": 26,
+    "intruder": "barbados",
+    "word_0": "scientists",
+    "word_1": "fossil",
+    "word_2": "bird",
+    "word_3": "of",
+    "word_4": "species",
+    "word_5": "barbados"
+  },
+  {
+    "topic_id": 27,
+    "intruder": "bandit",
+    "word_0": "putin",
+    "word_1": "russia",
+    "word_2": "yukos",
+    "word_3": "bandit",
+    "word_4": "oil",
+    "word_5": "russian"
+  },
+  {
+    "topic_id": 28,
+    "intruder": "airways",
+    "word_0": "game",
+    "word_1": "nintendo",
+    "word_2": "airways",
+    "word_3": "video",
+    "word_4": "ds",
+    "word_5": "halo"
+  },
+  {
+    "topic_id": 29,
+    "intruder": "veerappan",
+    "word_0": "veerappan",
+    "word_1": "bird",
+    "word_2": "human",
+    "word_3": "stem",
+    "word_4": "vaccine",
+    "word_5": "flu"
+  },
+  {
+    "topic_id": 30,
+    "intruder": "turkey",
+    "word_0": "arthritis",
+    "word_1": "drug",
+    "word_2": "heart",
+    "word_3": "merck",
+    "word_4": "turkey",
+    "word_5": "vioxx"
+  },
+  {
+    "topic_id": 31,
+    "intruder": "prices",
+    "word_0": "prices",
+    "word_1": "climate",
+    "word_2": "kyoto",
+    "word_3": "warming",
+    "word_4": "arctic",
+    "word_5": "global"
+  },
+  {
+    "topic_id": 32,
+    "intruder": "warming",
+    "word_0": "mine",
+    "word_1": "warming",
+    "word_2": "crash",
+    "word_3": "train",
+    "word_4": "plane",
+    "word_5": "airport"
+  },
+  {
+    "topic_id": 33,
+    "intruder": "quarter",
+    "word_0": "virgin",
+    "word_1": "quarter",
+    "word_2": "spaceshipone",
+    "word_3": "prize",
+    "word_4": "flight",
+    "word_5": "space"
+  },
+  {
+    "topic_id": 34,
+    "intruder": "climate",
+    "word_0": "gm",
+    "word_1": "vehicles",
+    "word_2": "sales",
+    "word_3": "motor",
+    "word_4": "ford",
+    "word_5": "climate"
+  },
+  {
+    "topic_id": 35,
+    "intruder": "nasa",
+    "word_0": "pension",
+    "word_1": "deficit",
+    "word_2": "snow",
+    "word_3": "trade",
+    "word_4": "nasa",
+    "word_5": "budget"
+  },
+  {
+    "topic_id": 36,
+    "intruder": "united",
+    "word_0": "acrobat",
+    "word_1": "kodak",
+    "word_2": "united",
+    "word_3": "cameras",
+    "word_4": "adobe",
+    "word_5": "digital"
+  },
+  {
+    "topic_id": 37,
+    "intruder": "nasa",
+    "word_0": "check",
+    "word_1": "nasa",
+    "word_2": "mastercard",
+    "word_3": "credit",
+    "word_4": "paypal",
+    "word_5": "payment"
+  },
+  {
+    "topic_id": 38,
+    "intruder": "trade",
+    "word_0": "tumor",
+    "word_1": "brain",
+    "word_2": "trade",
+    "word_3": "language",
+    "word_4": "study",
+    "word_5": "researchers"
+  },
+  {
+    "topic_id": 39,
+    "intruder": "locust",
+    "word_0": "kenyan",
+    "word_1": "peace",
+    "word_2": "maathai",
+    "word_3": "prize",
+    "word_4": "locust",
+    "word_5": "nobel"
+  },
+  {
+    "topic_id": 40,
+    "intruder": "airlines",
+    "word_0": "tallest",
+    "word_1": "bridge",
+    "word_2": "leaks",
+    "word_3": "11",
+    "word_4": "dig",
+    "word_5": "airlines"
+  },
+  {
+    "topic_id": 41,
+    "intruder": "veerappan",
+    "word_0": "wine",
+    "word_1": "veerappan",
+    "word_2": "cigarette",
+    "word_3": "court",
+    "word_4": "tobacco",
+    "word_5": "smoking"
+  },
+  {
+    "topic_id": 42,
+    "intruder": "yukos",
+    "word_0": "meteor",
+    "word_1": "shower",
+    "word_2": "moon",
+    "word_3": "eclipse",
+    "word_4": "yukos",
+    "word_5": "lunar"
+  },
+  {
+    "topic_id": 43,
+    "intruder": "deficit",
+    "word_0": "bell",
+    "word_1": "salvation",
+    "word_2": "army",
+    "word_3": "ringers",
+    "word_4": "deficit",
+    "word_5": "kettle"
+  },
+  {
+    "topic_id": 44,
+    "intruder": "arafat",
+    "word_0": "robot",
+    "word_1": "epson",
+    "word_2": "flying",
+    "word_3": "robots",
+    "word_4": "seiko",
+    "word_5": "arafat"
+  },
+  {
+    "topic_id": 45,
+    "intruder": "athens",
+    "word_0": "athens",
+    "word_1": "hmcs",
+    "word_2": "submarine",
+    "word_3": "chicoutimi",
+    "word_4": "canadian",
+    "word_5": "fire"
+  },
+  {
+    "topic_id": 46,
+    "intruder": "nuclear",
+    "word_0": "barbados",
+    "word_1": "tiger",
+    "word_2": "woods",
+    "word_3": "elin",
+    "word_4": "nordegren",
+    "word_5": "nuclear"
+  },
+  {
+    "topic_id": 47,
+    "intruder": "ibm",
+    "word_0": "wanted",
+    "word_1": "veerappan",
+    "word_2": "bandit",
+    "word_3": "india",
+    "word_4": "ibm",
+    "word_5": "police"
+  },
+  {
+    "topic_id": 48,
+    "intruder": "wireless",
+    "word_0": "locusts",
+    "word_1": "locust",
+    "word_2": "wireless",
+    "word_3": "africa",
+    "word_4": "plague",
+    "word_5": "swarms"
+  }
+]
