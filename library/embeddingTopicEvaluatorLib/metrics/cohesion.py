@@ -22,7 +22,6 @@ def cohesion(model: TopicModelEvaluator, distance: Callable[[np.ndarray], np.nda
         
     arrayCentroides = np.array(centroides)
     arraySentences = np.array(sentences)
-    print(arrayCentroides.shape,arraySentences.shape)
     matrix = distance(arrayCentroides, arraySentences)
 
     return np.diag(matrix)
