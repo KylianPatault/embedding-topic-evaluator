@@ -4,7 +4,7 @@ from bertopic import BERTopic
 
 from ..models.base import TopicModelEvaluator
 
-def coherence(model: TopicModelEvaluator) -> dict:
+def coherence(model: TopicModelEvaluator, useEmbeddingModel: bool = True) -> dict:
     """
     Calcule la cohérence sémantique de chaque topic du modèle.
 
@@ -33,7 +33,7 @@ def coherence(model: TopicModelEvaluator) -> dict:
     for key in keys:
         # Pour chaque topic, on récupère ses mots et leurs vecteurs (embeddings)
         words = model.getTopicWords(key)
-        word_embeddings = model.getWordVectors(words)
+        word_embeddings = model.getWordVectors(words, useEmbeddingModel)
 
         # Calcul de la matrice de similarité cosinus entre tous les mots du topic
         sim_matrix = cosine_similarity(word_embeddings)

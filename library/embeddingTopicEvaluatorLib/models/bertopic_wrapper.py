@@ -67,9 +67,12 @@ class TopicModelEvaluatorBERTopic(TopicModelEvaluator):
                 self.embeddingModel = config["EmbeddingModel"]
             
 
-    def getWordVectors(self, words: list) -> np.ndarray:
+    def getWordVectors(self, words: list, useEmbeddingModel: bool = True) -> np.ndarray:
         """Récupère les embeddings pour une liste de mots donnés."""
-        return self.model.embedding_model.embed_words(words)
+        if self.embeddingModel is not None and useEmbeddingModel :
+            return self.embeddingModel.encode(words)
+        else:
+            return self.model.embedding_model.embed_words(words)
 
     def getDocumentsVectors(self, documents: list ,useEmbeddingModel: bool = True) -> np.ndarray:
         """

@@ -5,7 +5,7 @@ from typing import Callable
 from ..utils.embeddings import calculCentroide
 from ..models.base import TopicModelEvaluator
 
-def cohesion(model: TopicModelEvaluator, distance: Callable[[np.ndarray], np.ndarray] = cosine_similarity):
+def cohesion(model: TopicModelEvaluator, distance: Callable[[np.ndarray], np.ndarray] = cosine_similarity, useEmbeddingModel: bool = True):
     """
     Cette fonction permet de calculer la cohésion entre les centroïdes des topics en fonction de leurs mots de référence et une phrase composer des mots qui définissent les topics. 
     Le but de la diversity est d'être maximisé. 
@@ -17,11 +17,12 @@ def cohesion(model: TopicModelEvaluator, distance: Callable[[np.ndarray], np.nda
     for key in keys :
         words = model.getTopicWords(key)
         topic_words = " ".join(words)
-        sentences.append(model.getDocumentsVectors(topic_words,False))
-        centroides.append(calculCentroide(words, model))
+        sentences.append(model.getDocumentsVectors(topic_words, useEmbeddingModel))
+        centroides.append(calculCentroide(words, model, useEmbeddingModel))
         
     arrayCentroides = np.array(centroides)
     arraySentences = np.array(sentences)
+    print(arrayCentroides.shape,arraySentences.shape)
     matrix = distance(arrayCentroides, arraySentences)
 
     return np.diag(matrix)
