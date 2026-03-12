@@ -78,8 +78,10 @@ embeddingTopicEvaluatorLib/
 │   └── top2vec_wrapper.py
 ├── metrics/         # Métriques d'évaluation (fonctions pures)
 │   ├── coherence.py
+│   ├── cohesion.py
 │   ├── diversity.py
 │   └── retrieval.py
+    
 ├── utils/           # Fonctions utilitaires partagées
 │   └── embeddings.py
 ├── config/          # Configuration globale
@@ -98,7 +100,7 @@ Chaque modèle de topics (BERTopic, Top2Vec) est encapsulé dans un **wrapper** 
 
 #### Métriques implémentées comme fonctions pures
 
-Les trois métriques (`coherence`, `diversity`, `retrieval`) sont implémentées comme des **fonctions indépendantes** (et non des classes) prenant un `TopicModelEvaluator` en paramètre. Ce choix offre :
+Les quatres métriques (`coherence`, `diversity`, `retrieval`, `cohesion`) sont implémentées comme des **fonctions indépendantes** (et non des classes) prenant un `TopicModelEvaluator` en paramètre. Ce choix offre :
 
 - **Simplicité** : une fonction sans état est plus facile à tester et à comprendre.
 - **Composabilité** : les métriques peuvent être appelées indépendamment ou combinées librement.
@@ -110,27 +112,27 @@ Les calculs d'embeddings partagés (e.g. `calculCentroide`) sont isolés dans `u
 
 ## Datasets
 
-### 20 Newsgroups
+### [20 Newsgroups](https://www.kaggle.com/datasets/crawford/20-newsgroups/data)
 
 Le dataset 20 Newsgroups est une collection de 18 846 articles de newsgroups répartis en 20 catégories thématiques (politique, religion, sport, science, informatique, etc.). Il constitue un benchmark classique pour la classification et le clustering de texte.
 
-### AG News
+### [AG News](https://huggingface.co/datasets/wangrongsheng/ag_news)
 
 Le dataset AG News regroupe 127 600 articles de presse (120 000 train + 7 600 test) issus de plus de 2 000 sources, répartis en 4 catégories : *World*, *Sports*, *Business* et *Sci/Tech*. Il est fréquemment utilisé comme benchmark de classification de texte court. Nous utilisons ici la version de train du dataset.
 
-### ArXiv
+### [ArXiv](https://huggingface.co/datasets/mteb/arxiv-clustering-s2s)
 
 Le dataset ArXiv est un ensemble de données de 31 articles de presse répartis en 4 catégories. Il est utilisé pour évaluer les performances des modèles de classification de texte.
 
-### Big Patent
+### [Big Patent](https://huggingface.co/datasets/jinaai/big-patent-clustering)
 
 Le dataset Big Patent Clustering (variante Jina AI) est un sous-ensemble du dataset Big Patent, contenant des brevets répartis en 9 catégories CPC (Cooperative Patent Classification). Il est conçu pour le clustering de documents longs. Nous utilisons ici la version "Big Patent Clustering" du dataset contenant 3 documents.
 
-### BioRxiv
+### [BioRxiv](https://huggingface.co/datasets/mteb/biorxiv-clustering-p2p)
 
 Le dataset BioRxiv (variante MTEB `biorxiv-clustering-p2p`) contient 53 787 paires titre+résumé d'articles de biologie préprint, répartis en 26 catégories disciplinaires (neurosciences, microbiologie, génomique, bioinformatique, etc.). Nous utilisons ici la variante "biorxiv-clustering-p2p" du dataset.
 
-### ClusTREC-Covid
+### [ClusTREC-Covid](https://huggingface.co/datasets/Uri-ka/ClusTREC-Covid)
 
 Le dataset ClusTREC-Covid est une adaptation du dataset TREC-COVID pour le clustering. Il contient 6 852 articles scientifiques sur la COVID-19 (titres + résumés), regroupés en 50 topics thématiques (e.g., *réponse du coronavirus aux changements météorologiques*). Nous utilisons ici la version "ClusTREC-Covid" du dataset.
 
