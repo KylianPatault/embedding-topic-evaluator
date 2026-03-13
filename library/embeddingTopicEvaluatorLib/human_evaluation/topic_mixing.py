@@ -34,6 +34,7 @@ def generate_tasks_mixed(
     model: TopicModelEvaluator,
     n_words: int = 10,
     useEmbeddingModel: bool = False,
+    stopWords: list[str] = [],
 ) -> list[dict]:
     """
     Génère les tâches unifiées du Topic Mixing Test pour Label Studio.
@@ -50,15 +51,19 @@ def generate_tasks_mixed(
                             du topic principal, et le reste (n_words - n_words // 2) 
                             du topic le plus proche.
         useEmbeddingModel : Si True, utilise le modèle d'embeddings pour les centroïdes.
+        stopWords         : Liste de mots à ne pas inclure dans les tâches.
 
     Retourne une liste de dicts mélangés aléatoirement, importables dans Label Studio.
     """
     keys = [k for k in model.getTopicsKeys() if k != -1]
 
-    # Pré-calcul des centroïdes de chaque topic
+    # Pré-calcul des mots filtrés pour chaque topic
+    all_topics = {k: [w for w in model.getTopicWords(k) if w not in stopWords] for k in keys}
+
+    # Pré-calcul des centroïdes locaux sur les N premiers mots filtrés
     centroids: dict[int, np.ndarray] = {
         k: calculCentroide(
-            word_topics=model.getTopicWords(k)[:n_words],
+            word_topics=all_topics[k][:n_words],
             model=model,
             useEmbeddingModel=useEmbeddingModel,
         )
@@ -69,7 +74,7 @@ def generate_tasks_mixed(
 
     for topic_key in keys:
         # 1. Tâche Single Topic
-        single_words = model.getTopicWords(topic_key)[:n_words]
+        single_words = all_topics[topic_key][:n_words]
         task_single = {
             "task_type": "single",
             "topic_id_1": topic_key,
@@ -83,8 +88,8 @@ def generate_tasks_mixed(
         n_first = n_words // 2
         n_second = n_words - n_first
 
-        words_a = model.getTopicWords(topic_key)[:n_first]
-        words_b = model.getTopicWords(closest_key)[:n_second]
+        words_a = all_topics[topic_key][:n_first]
+        words_b = all_topics[closest_key][:n_second]
 
         multi_words = words_a + words_b
         random.shuffle(multi_words)

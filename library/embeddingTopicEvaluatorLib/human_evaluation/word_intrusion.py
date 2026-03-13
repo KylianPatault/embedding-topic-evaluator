@@ -15,6 +15,7 @@ def generate_tasks(
     top_distant_pct: float = 0.2,
     top_active_pct: float = 0.2,
     useEmbeddingModel: bool = False,
+    stopWords: list[str] = [],
 ) -> list[dict]:
     """
     Génère les tâches du Word Intrusion Test pour Label Studio.
@@ -38,12 +39,13 @@ def generate_tasks(
                           centroïde cible à conserver. 1.0 = tous les candidats.
         top_active_pct  : Fraction [0, 1] des candidats les mieux classés dans
                           leur topic d'origine à conserver. 1.0 = tous.
+        stopWords       : Liste de mots à ne pas inclure dans les tâches.
 
     Retourne une liste de dicts importables directement dans Label Studio.
     """
     keys = [k for k in model.getTopicsKeys() if k != -1]
-    # Pré-calcul : top mots + leur rang (index dans la liste) pour chaque topic
-    all_topics = {k: model.getTopicWords(k)[:n_words * 2] for k in keys}
+    # Pré-calcul : top mots (filtrés) + leur rang (index dans la liste) pour chaque topic
+    all_topics = {k: [w for w in model.getTopicWords(k) if w not in stopWords] for k in keys}
     tasks = []
 
     for topic_key in keys:
