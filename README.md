@@ -1,6 +1,6 @@
 # Évaluation de modèles d'embeddings de topic
 
-Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec) basée sur 3 métriques : cohérence, retrieval et diversité.
+Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec) basée sur 3 métriques : cohérence, retrieval et diversité. Ainsi qu'un word intrusion test pour évaluer la qualité des topics générés.
 
 ## Table des matières
 
@@ -12,6 +12,9 @@ Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec)
   - [Cohérence](#cohérence)
   - [Retrieval](#retrieval)
   - [Diversité](#diversité)
+- [Word Intrusion Test](#word-intrusion-test)
+  - [Choix des mots](#choix-des-mots)
+  - [Choix de l'intrus](#choix-de-lintrus)
 - [Architecture](#architecture)
   - [Structure des modules](#structure-des-modules)
   - [Choix d'architecture](#choix-darchitecture)
@@ -63,6 +66,29 @@ Cette métrique calcule la fidélité aux documents du topic en utilisant la mé
 ### Diversité
 
 Cette méthode calcule la distance entre les centroïdes des topics les plus proches, puis on calcule la moyenne des sommes de ces distances.
+
+## Word Intrusion Test
+
+Le Word Intrusion Test est une méthode d'évaluation qualitative des topic models. Il consiste à présenter à des annotateurs humains une liste de mots pour chaque topic, dont un mot est un intrus. L'annotateur doit identifier l'intrus. Le score est calculé comme le pourcentage d'intrus correctement identifiés.
+
+### Choix des mots
+
+Pour chaque topic, le modèle (BERTopic ou Top2Vec) fournit une liste ordonnée de mots caractéristiques, du plus représentatif au moins représentatif. On retient les `n_words` premiers (par défaut 5), qui correspondent aux mots ayant le score de pertinence le plus élevé pour ce topic.
+
+Ces mots sont ensuite mélangés aléatoirement avec l'intrus avant d'être présentés à l'annotateur, afin d'éviter tout biais de position.
+
+### Choix de l'intrus
+
+On compare chaque candidat au centroïde du topic cible, et on choisit celui
+qui a la similarité cosinus la plus faible, c'est-à-dire le mot :
+
+- le plus éloigné du centroïde
+- le plus susceptible d'être un intrus
+
+L'intrus n'est pas choisi au hasard : c'est le mot qui maximise l'incohérence
+avec le topic cible tout en étant légitime dans un autre contexte. Cela rend
+le test plus exigeant : si l'annotateur trouve quand même l'intrus, c'est
+que le topic est vraiment cohérent.
 
 ## Architecture
 
