@@ -75,6 +75,8 @@ def generate_tasks_mixed(
     for topic_key in keys:
         # 1. Tâche Single Topic
         single_words = all_topics[topic_key][:n_words]
+        if len(single_words) < n_words:
+            continue
         task_single = {
             "task_type": "single",
             "topic_id_1": topic_key,
@@ -90,6 +92,9 @@ def generate_tasks_mixed(
 
         words_a = all_topics[topic_key][:n_first]
         words_b = all_topics[closest_key][:n_second]
+
+        if len(words_a) < n_first or len(words_b) < n_second:
+            continue
 
         multi_words = words_a + words_b
         random.shuffle(multi_words)

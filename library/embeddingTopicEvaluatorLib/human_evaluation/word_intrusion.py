@@ -50,6 +50,8 @@ def generate_tasks(
 
     for topic_key in keys:
         target_words = all_topics[topic_key][:n_words]
+        if len(target_words) < n_words:
+            continue
 
         # Centroïde du topic cible
         centroid = calculCentroide(word_topics=target_words, model=model, useEmbeddingModel=useEmbeddingModel).reshape(1, -1)
