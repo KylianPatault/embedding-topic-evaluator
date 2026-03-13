@@ -1,12 +1,6 @@
-numpy
-scikit-learn
-sentence-transformers
-bertopic
-top2vec
-pytrec_eval
-flair
-gensim
-spacy
+numpy>=2.2.6
+matplotlib>=3.10.8
+datasets>=4.6.1
+scikit-learn>=1.7.2
 ipykernel
 pytest
-label-studio>=1.9.0
