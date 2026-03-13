@@ -4,7 +4,7 @@ from bertopic import BERTopic
 
 from ..models.base import TopicModelEvaluator
 
-def coherence(model: TopicModelEvaluator, useEmbeddingModel: bool = True) -> dict:
+def coherence(model: TopicModelEvaluator, useEmbeddingModel: bool = False) -> dict:
     """
     Calcule la cohérence sémantique de chaque topic du modèle.
 
