@@ -1,4 +1,4 @@
-# Évaluation de modèles d'embeddings de topic
+ # Évaluation de modèles d'embeddings de topic
 
 Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec) basée sur 3 métriques : cohérence, retrieval et diversité.
 
@@ -36,19 +36,70 @@ pip install -r requirements.txt
 ## Modèles
 
 Ce projet se concentre sur l'évaluation de deux modèles d'embeddings pour comprendre la signification sémantique des documents.
+Durant nos entraînements, nous avons fait varier le paramètre **nr_topics** qui correspond au nombre de topics que le modèle doit créer. 
 
 ### Top2Vec
 
 Top2Vec est un algorithme de modélisation thématique et de recherche sémantique. Il détecte automatiquement les thèmes présents dans le texte et génère des vecteurs de thèmes, de documents et de mots représentés conjointement dans un même espace vectoriel.
 
+Pour entraîner ce modèle nous avons choisie les paramètres suivants (disponible dans le fichier [config](./library/embeddingTopicEvaluatorLib/config/config.py):
+```
+"UMAP" : {
+    "n_neighbors" : 15, # Taille du voisinage local (plus élevé = vision plus globale)
+    "n_components" : 10, # Dimension de sortie pour le clustering
+    "min_dist" : 0.0, # Distance min entre les points
+    "metric" : "cosine" # Métrique de distance
+},
+        
+"EmbeddingModel" : EMBEDDING_MODEL,
+        
+"TOP2VEC" : {
+    # Modèle de Sentence Transformers utilisé pour les embeddings
+    "embedding_model" : "paraphrase-multilingual-MiniLM-L12-v2",
+    "min_count" : 5, # Nombre minimum d'occurrences d'un mot pour être pris en compte
+    "nr_topics" : ..., # Nombre de topics à générer
+    "verbose" : True, # Affiche la barre de progression
+    "n_components" : 10 # Nombre de mots par Topics
+}
+```
+Pour ce modèle, nous avons choisi d'utiliser le model [paraphrase-multilingual-MiniLM-L12-v2](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2) car c’était l’option la plus performante à ce moment-là. 
+
 ### BERTopic
 
 BERTopic est un framework moderne de modélisation thématique qui répond à de nombreuses limites des approches traditionnelles. Développé par Maarten Grootendorst , il utilise des plongements (embeddings) basés sur des transformeurs (comme BERT) pour comprendre la signification sémantique des documents et les regrouper en clusters en fonction de leur contexte, plutôt que de se baser uniquement sur la fréquence des mots.
 
+Pour entraîner ce modèle nous avons choisie les paramètres suivants (disponible dans le fichier [config](./library/embeddingTopicEvaluatorLib/config/config.py):
+```
+"UMAP" : {
+    "n_neighbors" : 50, # Taille du voisinage local (plus élevé = vision plus globale)
+    "n_components" : 10, # Dimension de sortie pour le clustering
+    "min_dist" : 0.0, # Distance min entre les points
+    "metric" : "cosine" # Métrique de distance
+},
+"HDBSCAN" : {
+    "min_cluster_size" : 50, # Taille min d'un topic
+    "min_samples" : 1, # Sensibilité au bruit (plus bas = moins d'exclus)
+    "metric" :"euclidean", # Distance standard après UMAP
+    "cluster_selection_method" : "eom", # Sélection des clusters les plus denses
+    "prediction_data" : True # Permet de classer de nouveaux documents
+},
+"EmbeddingModel" : EMBEDDING_MODEL, 
+    
+"BERTopic" : {
+    # Modèle de Sentence Transformers utilisé pour les embeddings
+    "embedding_model" : "all-mpnet-base-v2",
+    "nr_topics" : ... , # Réduction automatique du nombre de topics si nécessaire
+    "verbose" : True # Affiche la barre de progression
+}
+```
+Pour ce modèle, nous avons choisi d'utiliser le model [all-mpnet-base-v2](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html) car c’était l’option la plus performante à ce moment-là.
+
 ## Métriques d'évaluation
 
 Ce projet utilise quatre métriques d'évaluation pour évaluer les performances des modèles. Ces métriques sont la cohérence, le retrieval, la diversité et la cohésion.
-Pour calculer ces métriques, on utilise un modèle différant, cela permet de comparer les 2 modèles indépendamment de leurs représentations internes des embeddings. Bien sûr, il est toujours possible de calculer les métriques en fonction du modèle de production d'embedding interne. Pour information, la métrique de cohésion est calculée sur les embeddings interne. Le modèle choisi pour faire la comparaison est [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2), nous avons choisi ce modèle, car il a été entraîné sur un très grand nombre de données de type texte plus de 1 milliard. Ce modèle a été créé pour encoder des phrases et de courts paragraphes. À partir d'un texte d'entrée, il produit un vecteur qui capture l'information sémantique. Ce vecteur peut être utilisé pour la recherche d'informations, le regroupement de données ou l'analyse de similarité entre phrases.
+Pour calculer ces métriques, on utilise un modèle différant, cela permet de comparer les 2 modèles indépendamment de leurs représentations internes des embeddings. Bien sûr, il est toujours possible de calculer les métriques en fonction du modèle de production d'embedding interne. Pour information, la métrique de cohésion est calculée sur les embeddings interne. 
+
+Le modèle choisi pour faire la comparaison est [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2), nous avons choisi ce modèle, car il a été entraîné sur un très grand nombre de données de type texte plus de 1 milliard. Ce modèle a été créé pour encoder des phrases et de courts paragraphes. À partir d'un texte d'entrée, il produit un vecteur qui capture l'information sémantique. Ce vecteur peut être utilisé pour la recherche d'informations, le regroupement de données ou l'analyse de similarité entre phrases.
 
 ### Cohérence
 
@@ -70,6 +121,7 @@ Cette métrique permet de vérifier si le modèle créé des topics éloigner du
 
 ### Cohésion
 
+Cette métrique compare pour un topic si en calculant le centroide des mots qui le définisse (la moyenne des embeddings des mots qui définisse le topics) et l'embedding de la phrase composer des mots qui définissent le topics. Si on se retrouve avec une similarité cosinus élever, cela veux dire les mots qui définissent notre topics le représente bien. Par défaut, cette métrique est calculée sur les embedding produit par le modèle interne. 
 
 ## Architecture
 
