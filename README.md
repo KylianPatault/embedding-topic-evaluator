@@ -1,6 +1,6 @@
 # Évaluation de modèles d'embeddings de topic
 
-Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec) basée sur 3 métriques : cohérence, retrieval et diversité. Ainsi qu'un word intrusion test pour évaluer la qualité des topics générés.
+Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec) basée sur 4 métriques : cohérence, retrieval, diversité et cohésion. Ainsi qu'un word intrusion test pour évaluer la qualité des topics générés.
 
 ## Table des matières
 
