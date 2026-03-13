@@ -24,6 +24,7 @@ Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec)
   - [ClusTREC-Covid](#clustrec-covid)
 - [Résultats](#résultats)
   - [Observations Cohérence](#observations-cohérence)
+  - [Observations Cohésion](#observations-cohésion)
   - [Observations Retrieval](#observations-retrieval)
   - [Observations Diversité](#observations-diversité)
 
@@ -196,47 +197,112 @@ Le dataset ClusTREC-Covid est une adaptation du dataset TREC-COVID pour le clust
 
 ## Résultats
 
-| Modèle | Dataset | Nombre de topics | Cohérence | Retrieval-MAP | Retrieval-NDCG | Diversité |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| BERTopic | 20 Newsgroups | 20 | 0.XX | 0.XX | 0.XX | 0.XX |
-| Top2Vec | 20 Newsgroups | 20 | 0.XX | 0.XX | 0.XX | 0.XX |
-| BERTopic | AG News | 4 | 0.XX | 0.XX | 0.XX | 0.XX |
-| Top2Vec | AG News | 4 | 0.XX | 0.XX | 0.XX | 0.XX |
-| BERTopic | ArXiv | 50 | 0.XX | 0.XX | 0.XX | 0.XX |
-| Top2Vec | ArXiv | 50 | 0.XX | 0.XX | 0.XX | 0.XX |
-| BERTopic | Big Patent | 100 | 0.XX | 0.XX | 0.XX | 0.XX |
-| Top2Vec | Big Patent | 100 | 0.XX | 0.XX | 0.XX | 0.XX |
-| BERTopic | BioRxiv | 30 | 0.XX | 0.XX | 0.XX | 0.XX |
-| Top2Vec | BioRxiv | 30 | 0.XX | 0.XX | 0.XX | 0.XX |
-| BERTopic | ClusTREC-Covid | 10 | 0.XX | 0.XX | 0.XX | 0.XX |
-| Top2Vec | ClusTREC-Covid | 10 | 0.XX | 0.XX | 0.XX | 0.XX |
-
 ### Observations Cohérence
 
-D'après le graphique ci-dessous, on peut observer que BERTopic est plus cohérent que Top2Vec sur l'ensemble des datasets.
+#### BERTopic – 20 Newsgroups
 
-![Cohérence](images/coherence.png)
+La cohérence démarre à ~0.230 pour k=2, monte progressivement jusqu'à un pic à ~0.271 pour k=18, puis redescend graduellement pour se stabiliser autour de ~0.252–0.255 à partir de k=34. Le modèle produit ses topics les plus cohérents autour de k=18, ce qui correspond au nombre réel de catégories du dataset (~20). Au-delà, les topics deviennent trop spécifiques et commencent à mélanger des termes moins liés sémantiquement.
+
+![Cohérence BERTopic 20news](./research/bertTopic/20news/img/Coherence.png)
+
+#### Top2Vec – 20 Newsgroups
+
+La cohérence commence à ~0.628 pour k=2, monte rapidement à ~0.725 pour k=6, puis oscille entre ~0.68 et ~0.725 avec des pics locaux à k=6 et k=14. Au-delà de k=26, la courbe redescend légèrement autour de ~0.68–0.70. Top2Vec atteint des scores de cohérence nettement plus élevés que BERTopic sur ce dataset, ce qui signifie que ses mots-clés par topic sont sémantiquement plus proches. Le modèle regroupe efficacement les mots dès k=6 et reste stable, même si l'augmentation du nombre de topics finit par diluer légèrement la qualité.
+
+![Cohérence Top2Vec 20news](./research/top2Vec/20news/img/Coherence.png)
+
+#### BERTopic – AG News
+
+La cohérence démarre à ~0.237 pour k=10, augmente fortement jusqu'à ~0.312 vers k=70–80, puis se stabilise en plateau autour de ~0.305–0.312 avec de légères oscillations pour les valeurs de k supérieures. Avec seulement 4 catégories réelles dans AG News, le modèle a besoin de plus de topics pour capturer des sous-thèmes spécialisés et cohérents. La stabilisation en plateau montre que BERTopic maintient une bonne qualité sémantique même avec un grand nombre de topics.
+
+![Cohérence BERTopic AG News](./research/bertTopic/ag_news/img/Coherence.png)
+
+#### Top2Vec – AG News
+
+La cohérence commence à ~0.492 pour k=10, chute à ~0.465 pour k=20, puis remonte progressivement pour atteindre un pic à ~0.527 vers k=90. Au-delà, la courbe oscille autour de ~0.505–0.517 avec quelques variations. Top2Vec affiche là aussi des scores de cohérence bien supérieurs à BERTopic. La chute initiale à k=20 suggère que le modèle peine à bien segmenter les 4 grandes catégories en sous-groupes, mais retrouve sa cohérence en créant des topics plus fins à partir de k=50.
+
+![Cohérence Top2Vec AG News](./research/top2Vec/ag_news/img/Coherence.png)
+
+---
+
+### Observations Cohésion
+
+#### BERTopic – 20 Newsgroups
+
+La cohésion montre un comportement très oscillant. Elle démarre à ~0.447 pour k=2, monte rapidement à ~0.497 pour k=4, puis alterne entre des pics (~0.503 à k=8) et des creux (~0.451 à k=24). La tendance générale est irrégulière avec une légère remontée en fin de courbe (~0.485 à k=40). Ces oscillations indiquent que la représentation interne des topics par BERTopic est instable : certains topics sont bien résumés par leurs mots-clés (pics), tandis que d'autres contiennent des mots dont les embeddings ne forment pas un groupe compact (creux).
+
+![Cohésion BERTopic 20news](./research/bertTopic/20news/img/Cohesion.png)
+
+#### Top2Vec – 20 Newsgroups
+
+La cohésion part de ~0.550 pour k=2, monte rapidement à ~0.693 pour k=6, puis se stabilise en plateau autour de ~0.675–0.693 avec un léger creux vers k=26 (~0.670). La courbe est globalement stable avec peu de variations au-delà de k=6. Top2Vec produit des topics dont les mots-clés sont très bien alignés avec le centroïde du topic dans l'espace d'embeddings interne, ce qui montre une bonne représentativité des mots choisis quel que soit le nombre de topics.
+
+![Cohésion Top2Vec 20news](./research/top2Vec/20news/img/Cohesion.png)
+
+#### BERTopic – AG News
+
+La cohésion part de ~0.473 pour k=10, augmente progressivement jusqu'à ~0.583 vers k=90, puis se stabilise en plateau autour de ~0.575–0.583 pour les valeurs de k supérieures. Plus le nombre de topics augmente, plus chaque topic devient spécialisé et ses mots-clés se rapprochent du centroïde du topic. Le plateau indique que BERTopic atteint un seuil de spécialisation au-delà duquel les topics restent bien représentés par leurs mots.
+
+![Cohésion BERTopic AG News](./research/bertTopic/ag_news/img/Cohesion.png)
+
+#### Top2Vec – AG News
+
+La cohésion oscille dans une plage étroite entre ~0.705 et ~0.722 sur l'ensemble des valeurs de k. On observe des pics à k=20 (~0.722) et k=40 (~0.721), un creux à k=30 (~0.705), puis une stabilisation autour de ~0.715 avec des oscillations régulières. Top2Vec maintient une cohésion élevée et très stable sur AG News, ce qui signifie que les mots-clés de chaque topic restent fidèles à la représentation interne du topic, indépendamment du nombre de topics demandé.
+
+![Cohésion Top2Vec AG News](./research/top2Vec/ag_news/img/Cohesion.png)
+
+---
 
 ### Observations Retrieval
 
-D'après le graphique ci-dessous, on peut observer que BERTopic est plus performant que Top2Vec sur l'ensemble des datasets.
+#### BERTopic – 20 Newsgroups
 
-![Retrieval](images/retrieval.png)
+Le NDCG démarre à ~1.0 pour k=2, chute à ~0.755 pour k=8–10, puis remonte progressivement pour se stabiliser autour de ~0.87 à partir de k=28. Le MAP suit la même tendance : il part de ~0.98 pour k=2, descend fortement à ~0.22 pour k=8, puis remonte graduellement jusqu'à ~0.55–0.57 pour les grands k. Avec peu de topics (k=2), le retrieval est parfait car chaque topic couvre un large éventail de documents. La chute vers k=8 montre que le modèle crée des topics mal alignés avec les vrais groupes de documents, mais la remontée au-delà de k=20 indique qu'en augmentant le nombre de topics, BERTopic retrouve une meilleure correspondance avec les catégories du dataset.
+
+![Retrieval BERTopic 20news](./research/bertTopic/20news/img/Retrieval.png)
+
+#### Top2Vec – 20 Newsgroups
+
+Le NDCG et le MAP décroissent tous les deux de manière monotone. Le NDCG passe de ~0.99 (k=2) à ~0.84 (k=40). Le MAP descend fortement de ~0.86 (k=2) à ~0.42 (k=40), avec une chute plus marquée entre k=2 et k=6. Contrairement à BERTopic, Top2Vec perd en qualité de retrieval quand on augmente le nombre de topics : les topics deviennent trop fragmentés et les requêtes ne retrouvent plus aussi fidèlement les documents pertinents.
+
+![Retrieval Top2Vec 20news](./research/top2Vec/20news/img/Retrieval.png)
+
+#### BERTopic – AG News
+
+Les performances de retrieval sont très stables. Le NDCG reste quasiment constant autour de ~0.94–0.95 sur toute la plage de k. Le MAP est également stable autour de ~0.70–0.76, avec un léger creux à k=30 (~0.67) suivi d'une remontée. BERTopic gère très bien AG News pour le retrieval : les 4 catégories claires du dataset permettent au modèle de maintenir des topics bien alignés avec les documents, quel que soit le nombre de topics choisi.
+
+![Retrieval BERTopic AG News](./research/bertTopic/ag_news/img/Retrieval.png)
+
+#### Top2Vec – AG News
+
+Le NDCG et le MAP décroissent de manière régulière et monotone. Le NDCG passe de ~0.94 (k=10) à ~0.81 (k=200). Le MAP descend de ~0.59 (k=10) à ~0.36 (k=200), de façon presque linéaire. Top2Vec perd progressivement en fidélité de retrieval sur AG News : avec un grand nombre de topics, le modèle crée des sous-groupes trop fins qui ne correspondent plus aux documents réels, ce qui dégrade la précision des requêtes.
+
+![Retrieval Top2Vec AG News](./research/top2Vec/ag_news/img/Retrieval.png)
+
+---
 
 ### Observations Diversité
 
-La diversité mesure les distinctions entre les topics générés (absence de chevauchement dans leurs mots-clés). Les valeurs observées se situent entre **~0.899 et ~0.927**, indiquant une diversité globalement très élevée.
+#### BERTopic – 20 Newsgroups
 
-Plusieurs tendances se dégagent en fonction du nombre de topics :
+La diversité augmente de manière quasi monotone. Elle part de ~0.365 pour k=4, connaît un minimum à ~0.345 pour k=8, puis croît régulièrement pour atteindre ~0.635 vers k=34. La courbe se stabilise ensuite autour de ~0.62–0.635 pour les plus grands k. Avec peu de topics, BERTopic crée des groupes trop larges qui se chevauchent dans l'espace d'embeddings. En augmentant k, chaque topic se spécialise et s'éloigne des autres, ce qui explique la hausse de diversité.
 
-- **k=10–25** : légère hausse avec un pic local (~0.922), le modèle génère peu de topics bien distincts.
-- **k=25–60** : **forte chute jusqu'au minimum (~0.899 à k=60)** — zone critique où le modèle crée des topics redondants partageant des mots-clés similaires.
-- **k=60–125** : remontée progressive avec des oscillations, le modèle retrouve de la spécialisation.
-- **k=150–200** : **tendance haussière nette** vers le maximum (~0.927), les topics deviennent de plus en plus spécialisés et distincts.
+![Diversité BERTopic 20news](./research/bertTopic/20news/img/Diversite.png)
 
-> **Conclusion** : la diversité seule favorise les grands `k`, mais doit être croisée avec la cohérence (qui tend à baisser quand `k` est trop élevé) pour identifier le meilleur compromis.
+#### Top2Vec – 20 Newsgroups
 
-On remarque que si le nombre de topics est faible, la diversité est élevée car les topics sont plus généraux.
-Si le nombre de topics est élevé, la diversité est aussi élevée car les topics sont plus spécifiques.
+La diversité décroît globalement. Elle démarre très haute à ~1.05 pour k=2, chute à ~0.83 pour k=4, puis continue de baisser avec des oscillations. On observe un rebond entre k=18 et k=26 (~0.72), mais la tendance baissière reprend ensuite pour atteindre ~0.64 à k=40. Avec 2 topics seulement, la diversité est maximale car les deux groupes sont naturellement éloignés. En augmentant k, Top2Vec crée des topics de plus en plus proches dans l'espace d'embeddings, ce qui réduit la diversité et peut mener à de la confusion lors du placement de nouveaux documents.
 
-![Diversité](images/diversite.png)
+![Diversité Top2Vec 20news](./research/top2Vec/20news/img/Diversite.png)
+
+#### BERTopic – AG News
+
+La diversité décroît de manière régulière. Elle atteint un pic à ~0.78 pour k=30, puis diminue progressivement jusqu'à ~0.64 pour k=200, avec un léger rebond autour de k=100 (~0.70). BERTopic produit des topics bien séparés autour de k=30, ce qui est cohérent avec la structure simple d'AG News (4 catégories). Au-delà, les sous-topics créés commencent à se rapprocher dans l'espace vectoriel, réduisant la diversité.
+
+![Diversité BERTopic AG News](./research/bertTopic/ag_news/img/Diversite.png)
+
+#### Top2Vec – AG News
+
+La diversité décroît presque linéairement. Elle part de ~0.77 pour k=10 et descend régulièrement jusqu'à ~0.35 pour k=200, sans variations notables. Top2Vec perd fortement en diversité avec un grand nombre de topics : le modèle crée des topics de plus en plus rapprochés, ce qui indique que les embeddings ne permettent pas de maintenir une bonne séparation au-delà d'un faible nombre de topics.
+
+![Diversité Top2Vec AG News](./research/top2Vec/ag_news/img/Diversite.png)
