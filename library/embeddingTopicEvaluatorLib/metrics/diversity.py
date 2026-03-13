@@ -23,7 +23,7 @@ def diversity(model: TopicModelEvaluator, distance: Callable[[np.ndarray], np.nd
             topic_words = " ".join(words)
             centroides.append(model.getDocumentsVectors(topic_words,useEmbeddingModel))
         else:
-            centroides.append(calculCentroide(words, model))
+            centroides.append(calculCentroide(words, model, useEmbeddingModel))
     
     arrayCentroides = np.array(centroides)
 

@@ -62,6 +62,7 @@ class TopicModelEvaluatorBERTopic(TopicModelEvaluator):
     def __init__(self, config: dict = None) :
         super().__init__(config)
         self.model = load_model_BERTopic(config)
+        self.embeddingModel = None
         if config is not None :
             if "EmbeddingModel" in config.keys():
                 self.embeddingModel = config["EmbeddingModel"]
