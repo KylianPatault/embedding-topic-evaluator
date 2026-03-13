@@ -7,9 +7,7 @@ from .word_intrusion import (
 )
 
 from .topic_mixing import (
-    generate_tasks_multi,
-    generate_tasks_single,
+    generate_tasks_mixed,
     save_tasks as save_topic_mixing_tasks,
-    topic_mixing_score_multi,
-    topic_mixing_score_single,
+    topic_mixing_score_mixed,
 )

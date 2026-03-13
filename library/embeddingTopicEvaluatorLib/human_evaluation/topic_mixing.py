@@ -30,36 +30,35 @@ def _find_closest_topic(
     return best_key
 
 
-def generate_tasks_multi(
+def generate_tasks_mixed(
     model: TopicModelEvaluator,
-    n_words_per_topic: int = 5,
+    n_words: int = 10,
     useEmbeddingModel: bool = False,
 ) -> list[dict]:
     """
-    Génère les tâches du Topic Mixing Test (identification multi-topic) pour Label Studio.
+    Génère les tâches unifiées du Topic Mixing Test pour Label Studio.
 
-    Pour chaque topic :
-    - Trouve le topic le plus proche (similarité cosinus entre centroïdes).
-    - Prend les n_words_per_topic premiers mots de chaque topic.
-    - Mélange les 2 * n_words_per_topic mots aléatoirement.
+    Pour chaque topic valide, génère 2 tâches :
+    1. Une tâche "Single Topic" : prend n_words mots du topic, l'annotateur doit cliquer sur "1 topic".
+    2. Une tâche "Multi Topic" : trouve le topic le plus proche, prend n_words//2 de chaque, 
+       les mélange, l'annotateur doit identifier les 2 topics d'origine.
 
     Args:
         model             : Instance de TopicModelEvaluator entraîné.
-        n_words_per_topic : Nombre de mots prélevés dans chacun des 2 topics.
+        n_words           : Nombre total de mots présentés dans chaque tâche. 
+                            Pour les tâches Multi Topic, on tire n_words // 2 mots 
+                            du topic principal, et le reste (n_words - n_words // 2) 
+                            du topic le plus proche.
         useEmbeddingModel : Si True, utilise le modèle d'embeddings pour les centroïdes.
 
-    Retourne une liste de dicts importables directement dans Label Studio.
-    Chaque dict contient :
-        - topic_id_1 (int)  : identifiant du topic principal.
-        - topic_id_2 (int)  : identifiant du topic le plus proche.
-        - word_0 … word_N   : mots mélangés (N = 2 * n_words_per_topic - 1).
+    Retourne une liste de dicts mélangés aléatoirement, importables dans Label Studio.
     """
     keys = [k for k in model.getTopicsKeys() if k != -1]
 
     # Pré-calcul des centroïdes de chaque topic
     centroids: dict[int, np.ndarray] = {
         k: calculCentroide(
-            word_topics=model.getTopicWords(k)[:n_words_per_topic],
+            word_topics=model.getTopicWords(k)[:n_words],
             model=model,
             useEmbeddingModel=useEmbeddingModel,
         )
@@ -69,48 +68,76 @@ def generate_tasks_multi(
     tasks = []
 
     for topic_key in keys:
+        # 1. Tâche Single Topic
+        single_words = model.getTopicWords(topic_key)[:n_words]
+        task_single = {
+            "task_type": "single",
+            "topic_id_1": topic_key,
+        }
+        for i, word in enumerate(single_words):
+            task_single[f"word_{i}"] = word
+        tasks.append(task_single)
+
+        # 2. Tâche Multi Topic
         closest_key = _find_closest_topic(topic_key, keys, centroids)
+        n_first = n_words // 2
+        n_second = n_words - n_first
 
-        words_a = model.getTopicWords(topic_key)[:n_words_per_topic]
-        words_b = model.getTopicWords(closest_key)[:n_words_per_topic]
+        words_a = model.getTopicWords(topic_key)[:n_first]
+        words_b = model.getTopicWords(closest_key)[:n_second]
 
-        all_words = words_a + words_b
-        random.shuffle(all_words)
+        multi_words = words_a + words_b
+        random.shuffle(multi_words)
 
-        task = {
+        task_multi = {
+            "task_type": "multi",
             "topic_id_1": topic_key,
             "topic_id_2": closest_key,
         }
-        for i, word in enumerate(all_words):
-            task[f"word_{i}"] = word
+        for i, word in enumerate(multi_words):
+            task_multi[f"word_{i}"] = word
+        tasks.append(task_multi)
 
-        tasks.append(task)
+    # Mélanger l'ordre global des tâches pour éviter que l'annotateur
+    # ne devine le pattern (single, puis multi, puis single...)
+    random.shuffle(tasks)
 
     return tasks
 
 
-def topic_mixing_score_multi(annotations: list[dict]) -> float:
+def topic_mixing_score_mixed(annotations: list[dict]) -> dict:
     """
-    Calcule le score du Multi-Topic Identification Test à partir des annotations
-    exportées de Label Studio.
+    Calcule les scores du Topic Mixing Test unifié à partir des annotations Label Studio.
 
-    Une tâche est réussie si l'annotateur a sélectionné exactement les 2 bons
-    identifiants de topics (ordre non important).
+    Il différencie les réponses selon le type de tâche (Single ou Multi).
+    - Single : l'annotateur doit choisir uniquement "1 topic".
+    - Multi : l'annotateur doit sélectionner les 2 identifiants exacts des topics.
 
     Args:
         annotations : liste exportée depuis Label Studio (format JSON).
 
-    Retourne un float entre 0.0 et 1.0.
+    Retourne :
+        Un dictionnaire contenant les scores détaillés:
+        {
+            "score_global": float,
+            "score_single": float,
+            "score_multi": float,
+            "details": {"single_correct": x, "single_total": y, "multi_correct": w, "multi_total": z}
+        }
     """
-    correct, total = 0, 0
+    single_correct, single_total = 0, 0
+    multi_correct, multi_total = 0, 0
 
     for task in annotations:
         data = task.get("data", {})
-        gt_1 = data.get("topic_id_1")
-        gt_2 = data.get("topic_id_2")
+        task_type = data.get("task_type")
 
-        if gt_1 is None or gt_2 is None:
-            continue
+        # Fallback pour rétablir une ancienne compatibilité ou ignorer des tâches mal formées
+        if not task_type:
+            if "topic_id_2" in data:
+                task_type = "multi"
+            else:
+                task_type = "single"
 
         task_annotations = task.get("annotations", [])
         if not task_annotations:
@@ -121,90 +148,42 @@ def topic_mixing_score_multi(annotations: list[dict]) -> float:
             continue
 
         try:
-            # Label Studio retourne les choix sous forme de liste de strings
             chosen = results[0]["value"]["choices"]
         except (KeyError, IndexError):
             continue
 
-        total += 1
-        chosen_set = {int(c) for c in chosen}
-        ground_truth_set = {gt_1, gt_2}
+        if task_type == "single":
+            single_total += 1
+            # Pour un test single topic, on attend que l'utilisateur n'ait coché qu'une case : "1 topic"
+            if len(chosen) == 1 and chosen[0] == "1 topic":
+                single_correct += 1
 
-        if chosen_set == ground_truth_set:
-            correct += 1
+        elif task_type == "multi":
+            multi_total += 1
+            gt_1 = data.get("topic_id_1")
+            gt_2 = data.get("topic_id_2")
 
-    return correct / total if total > 0 else 0.0
+            if gt_1 is not None and gt_2 is not None:
+                chosen_set = {int(c) for c in chosen if c.isdigit()}
+                ground_truth_set = {gt_1, gt_2}
 
+                if chosen_set == ground_truth_set:
+                    multi_correct += 1
 
-def generate_tasks_single(
-    model: TopicModelEvaluator,
-    n_words: int = 10,
-) -> list[dict]:
-    """
-    Génère les tâches du Topic Mixing Test (détection single topic) pour Label Studio.
+    total_correct = single_correct + multi_correct
+    total_tasks = single_total + multi_total
 
-    Pour chaque topic, génère une tâche présentant n_words mots issus d'un seul topic.
-    L'annotateur doit répondre : « 1 topic » ou « Plusieurs topics ».
-
-    Args:
-        model   : Instance de TopicModelEvaluator entraîné.
-        n_words : Nombre de mots présentés à l'annotateur.
-
-    Retourne une liste de dicts importables directement dans Label Studio.
-    Chaque dict contient :
-        - topic_id_1 (int) : identifiant du topic source.
-        - word_0 … word_N  : mots du topic (N = n_words - 1).
-    """
-    keys = [k for k in model.getTopicsKeys() if k != -1]
-
-    tasks = []
-
-    for topic_key in keys:
-        words = model.getTopicWords(topic_key)[:n_words]
-
-        task = {"topic_id_1": topic_key}
-        for i, word in enumerate(words):
-            task[f"word_{i}"] = word
-
-        tasks.append(task)
-
-    return tasks
-
-
-def topic_mixing_score_single(annotations: list[dict]) -> float:
-    """
-    Calcule le score du Single-Topic Detection Test à partir des annotations
-    exportées de Label Studio.
-
-    Une tâche est réussie si l'annotateur répond « 1 topic »
-    (toutes les tâches sont à topic unique).
-
-    Args:
-        annotations : liste exportée depuis Label Studio (format JSON).
-
-    Retourne un float entre 0.0 et 1.0.
-    """
-    correct, total = 0, 0
-
-    for task in annotations:
-        task_annotations = task.get("annotations", [])
-        if not task_annotations:
-            continue
-
-        results = task_annotations[0].get("result", [])
-        if not results:
-            continue
-
-        try:
-            chosen = results[0]["value"]["choices"][0]
-        except (KeyError, IndexError):
-            continue
-
-        total += 1
-        if chosen == "1 topic":
-            correct += 1
-
-    return correct / total if total > 0 else 0.0
+    return {
+        "score_global": total_correct / total_tasks if total_tasks > 0 else 0.0,
+        "score_single": single_correct / single_total if single_total > 0 else 0.0,
+        "score_multi": multi_correct / multi_total if multi_total > 0 else 0.0,
+        "details": {
+            "single_correct": single_correct,
+            "single_total": single_total,
+            "multi_correct": multi_correct,
+            "multi_total": multi_total,
+        }
+    }
 
 
 def save_tasks(tasks: list[dict], path: str) -> None:
