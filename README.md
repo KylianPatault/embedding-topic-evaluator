@@ -1,4 +1,4 @@
- # Évaluation de modèles d'embeddings de topic
+# Évaluation de modèles d'embeddings de topic
 
 Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec) basée sur 3 métriques : cohérence, retrieval et diversité. Ainsi qu'un word intrusion test pour évaluer la qualité des topics générés.
 
@@ -12,9 +12,7 @@ Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec)
   - [Cohérence](#cohérence)
   - [Retrieval](#retrieval)
   - [Diversité](#diversité)
-- [Word Intrusion Test](#word-intrusion-test)
-  - [Choix des mots](#choix-des-mots)
-  - [Choix de l'intrus](#choix-de-lintrus)
+  - [Cohésion](#cohésion)
 - [Architecture](#architecture)
   - [Structure des modules](#structure-des-modules)
   - [Choix d'architecture](#choix-darchitecture)
@@ -30,6 +28,9 @@ Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec)
   - [Observations Cohésion](#observations-cohésion)
   - [Observations Retrieval](#observations-retrieval)
   - [Observations Diversité](#observations-diversité)
+- [Word Intrusion Test](#word-intrusion-test)
+  - [Choix des mots](#choix-des-mots)
+  - [Choix de l'intrus](#choix-de-lintrus)
 
 ## Installation
 
@@ -37,17 +38,24 @@ Une plateforme d'évaluation pour les topic models neuronaux (BERTopic, Top2Vec)
 pip install -r requirements.txt
 ```
 
+Pour installer la librairie en local, aller dans le dossier [library](./library) et exécuter la commande :
+
+```bash
+pip install .
+```
+
 ## Modèles
 
 Ce projet se concentre sur l'évaluation de deux modèles d'embeddings pour comprendre la signification sémantique des documents.
-Durant nos entraînements, nous avons fait varier le paramètre **nr_topics** qui correspond au nombre de topics que le modèle doit créer. 
+Durant nos entraînements, nous avons fait varier le paramètre **nr_topics** qui correspond au nombre de topics que le modèle doit créer.
 
 ### Top2Vec
 
 Top2Vec est un algorithme de modélisation thématique et de recherche sémantique. Il détecte automatiquement les thèmes présents dans le texte et génère des vecteurs de thèmes, de documents et de mots représentés conjointement dans un même espace vectoriel.
 
-Pour entraîner ce modèle nous avons choisie les paramètres suivants (disponible dans le fichier [config](./library/embeddingTopicEvaluatorLib/config/config.py):
-```
+Pour entraîner ce modèle nous avons choisie les paramètres suivants (disponible dans le fichier [config](./library/embeddingTopicEvaluatorLib/config/config.py)) :
+
+```text
 "UMAP" : {
     "n_neighbors" : 15, # Taille du voisinage local (plus élevé = vision plus globale)
     "n_components" : 10, # Dimension de sortie pour le clustering
@@ -66,14 +74,16 @@ Pour entraîner ce modèle nous avons choisie les paramètres suivants (disponib
     "n_components" : 10 # Nombre de mots par Topics
 }
 ```
-Pour ce modèle, nous avons choisi d'utiliser le model [paraphrase-multilingual-MiniLM-L12-v2](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2) car c’était l’option la plus performante à ce moment-là. 
+
+Pour ce modèle, nous avons choisi d'utiliser le model [paraphrase-multilingual-MiniLM-L12-v2](https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2) car c’était l’option la plus performante à ce moment-là.
 
 ### BERTopic
 
 BERTopic est un framework moderne de modélisation thématique qui répond à de nombreuses limites des approches traditionnelles. Développé par Maarten Grootendorst , il utilise des plongements (embeddings) basés sur des transformeurs (comme BERT) pour comprendre la signification sémantique des documents et les regrouper en clusters en fonction de leur contexte, plutôt que de se baser uniquement sur la fréquence des mots.
 
-Pour entraîner ce modèle nous avons choisie les paramètres suivants (disponible dans le fichier [config](./library/embeddingTopicEvaluatorLib/config/config.py):
-```
+Pour entraîner ce modèle nous avons choisie les paramètres suivants (disponible dans le fichier [config](./library/embeddingTopicEvaluatorLib/config/config.py)) :
+
+```text
 "UMAP" : {
     "n_neighbors" : 50, # Taille du voisinage local (plus élevé = vision plus globale)
     "n_components" : 10, # Dimension de sortie pour le clustering
@@ -96,59 +106,37 @@ Pour entraîner ce modèle nous avons choisie les paramètres suivants (disponib
     "verbose" : True # Affiche la barre de progression
 }
 ```
+
 Pour ce modèle, nous avons choisi d'utiliser le model [all-mpnet-base-v2](https://www.sbert.net/docs/sentence_transformer/pretrained_models.html) car c’était l’option la plus performante à ce moment-là.
 
 ## Métriques d'évaluation
 
 Ce projet utilise quatre métriques d'évaluation pour évaluer les performances des modèles. Ces métriques sont la cohérence, le retrieval, la diversité et la cohésion.
-Pour calculer ces métriques, on utilise un modèle différant, cela permet de comparer les 2 modèles indépendamment de leurs représentations internes des embeddings. Bien sûr, il est toujours possible de calculer les métriques en fonction du modèle de production d'embedding interne. Pour information, la métrique de cohésion est calculée sur les embeddings interne. 
+Pour calculer ces métriques, on utilise un modèle différant, cela permet de comparer les 2 modèles indépendamment de leurs représentations internes des embeddings. Bien sûr, il est toujours possible de calculer les métriques en fonction du modèle de production d'embedding interne. Pour information, la métrique de cohésion est calculée sur les embeddings interne.
 
 Le modèle choisi pour faire la comparaison est [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2), nous avons choisi ce modèle, car il a été entraîné sur un très grand nombre de données de type texte plus de 1 milliard. Ce modèle a été créé pour encoder des phrases et de courts paragraphes. À partir d'un texte d'entrée, il produit un vecteur qui capture l'information sémantique. Ce vecteur peut être utilisé pour la recherche d'informations, le regroupement de données ou l'analyse de similarité entre phrases.
 
 ### Cohérence
 
 Cette métrique mesure la cohérence sémantique de chaque topic en calculant la similarité cosinus entre les embeddings de toutes les paires uniques de mots qui le composent (triangle supérieur de la matrice de similarité, diagonale exclue), puis en faisant la moyenne de ces similarités. Un score proche de 1 indique un topic cohérent dont les mots sont fortement liés sémantiquement.
-Par exemple : 
+Par exemple :
 Le topic : ["voiture", "camion", "véhicule", "roue"] doit avoir un score de cohérence élevé car tous les mots sont liés sémantiquement.
 Alors que, le topic : ["voiture", "pomme", "véhicule", "roue"] doit avoir un score de cohérence faible car les mots ne sont pas tous liés sémantiquement.
 
 ### Retrieval
 
-Cette métrique calcule la fidélité aux documents du topic en utilisant la méthode TREC. Cette approche soumet des requêtes dont chacune d'elles nous retourne les documents correspondant au topic fourni. On utilise deux métriques pour évaluer le retrieval :
+Cette métrique calcule la fidélité aux documents du topic en utilisant la méthode TREC. Cette approche soumet des requêtes dont chacune d'elles nous retourne les documents correspondant au topic fourni. Cette métrique calcule la similarité entre chacun des documents et chacun des topics pour fournir un score de similarité à la méthode TREC. On utilise deux métriques avec la méthode TREC pour évaluer le retrieval :
 
 - MAP (Mean Average Precision) : C'est la moyenne des précisions moyennes pour chaque requête.
 - NDCG (Normalized Discounted Cumulative Gain) : C'est la moyenne des gains cumulés normalisés pour chaque requête.
 
 ### Diversité
 
-Cette métrique permet de vérifier si le modèle créé des topics éloigner du point de vue des embeddings. On fait cela, pour vérifier si notre modelé réparti bien les topics dans l'espace, car si deux topics sont trop rapprocher, il pourrait y avoir une confusion lors du placement d'un nouveau document. Pour calculer cette métrique, il y a 2 cas le premier, on utilise le modèle d'embedding interne qui vas calcul le centroide des topics (la moyenne des embeddings des mots qui définisse le topics), puis on va comparer ces centroide entre eu avec une similarité cosinus. On fini par prendre la valeur de similarité du centroide le plus proche qu'on va soustraire à 1, puis on fait la moyenne pour chaque centroide. Le deuxième cas est très semblable au premier sauf qu'on va transformer les mots du topic une phrase par exemple le topic : ["voiture", "camion", "véhicule", "roue"] va devenir "voiture camion véhicule roue", on va créer un embedding de cette phrase avec un modèle externe puis le reste est identique à la première méthode. Le but de cette métrique est donc d'être maximisé. 
+Cette métrique permet de vérifier si le modèle créé des topics éloigner du point de vue des embeddings. On fait cela, pour vérifier si notre modelé réparti bien les topics dans l'espace, car si deux topics sont trop rapprocher, il pourrait y avoir une confusion lors du placement d'un nouveau document. Pour calculer cette métrique, il y a 2 cas le premier, on utilise le modèle d'embedding interne qui vas calcul le centroide des topics (la moyenne des embeddings des mots qui définisse le topics), puis on va comparer ces centroide entre eu avec une similarité cosinus. On fini par prendre la valeur de similarité du centroide le plus proche qu'on va soustraire à 1, puis on fait la moyenne pour chaque centroide. Le deuxième cas est très semblable au premier sauf qu'on va transformer les mots du topic une phrase par exemple le topic : ["voiture", "camion", "véhicule", "roue"] va devenir "voiture camion véhicule roue", on va créer un embedding de cette phrase avec un modèle externe puis le reste est identique à la première méthode. Le but de cette métrique est donc d'être maximisé.
 
 ### Cohésion
 
-Cette métrique compare pour un topic si en calculant le centroide des mots qui le définisse (la moyenne des embeddings des mots qui définisse le topics) et l'embedding de la phrase composer des mots qui définissent le topics. Si on se retrouve avec une similarité cosinus élever, cela veux dire les mots qui définissent notre topics le représente bien. Par défaut, cette métrique est calculée sur les embedding produit par le modèle interne. 
-
-## Word Intrusion Test
-
-Le Word Intrusion Test est une méthode d'évaluation qualitative des topic models. Il consiste à présenter à des annotateurs humains une liste de mots pour chaque topic, dont un mot est un intrus. L'annotateur doit identifier l'intrus. Le score est calculé comme le pourcentage d'intrus correctement identifiés.
-
-### Choix des mots
-
-Pour chaque topic, le modèle (BERTopic ou Top2Vec) fournit une liste ordonnée de mots caractéristiques, du plus représentatif au moins représentatif. On retient les `n_words` premiers (par défaut 5), qui correspondent aux mots ayant le score de pertinence le plus élevé pour ce topic.
-
-Ces mots sont ensuite mélangés aléatoirement avec l'intrus avant d'être présentés à l'annotateur, afin d'éviter tout biais de position.
-
-### Choix de l'intrus
-
-On compare chaque candidat au centroïde du topic cible, et on choisit celui
-qui a la similarité cosinus la plus faible, c'est-à-dire le mot :
-
-- le plus éloigné du centroïde
-- le plus susceptible d'être un intrus
-
-L'intrus n'est pas choisi au hasard : c'est le mot qui maximise l'incohérence
-avec le topic cible tout en étant légitime dans un autre contexte. Cela rend
-le test plus exigeant : si l'annotateur trouve quand même l'intrus, c'est
-que le topic est vraiment cohérent.
+Cette métrique compare pour un topic si en calculant le centroide des mots qui le définisse (la moyenne des embeddings des mots qui définisse le topics) et l'embedding de la phrase composer des mots qui définissent le topics. Si on se retrouve avec une similarité cosinus élever, cela veux dire les mots qui définissent notre topics le représente bien. Par défaut, cette métrique est calculée sur les embedding produit par le modèle interne.
 
 ## Architecture
 
@@ -332,3 +320,34 @@ La diversité décroît de manière régulière. Elle atteint un pic à ~0.78 po
 La diversité décroît presque linéairement. Elle part de ~0.77 pour k=10 et descend régulièrement jusqu'à ~0.35 pour k=200, sans variations notables. Top2Vec perd fortement en diversité avec un grand nombre de topics : le modèle crée des topics de plus en plus rapprochés, ce qui indique que les embeddings ne permettent pas de maintenir une bonne séparation au-delà d'un faible nombre de topics.
 
 ![Diversité Top2Vec AG News](./research/top2Vec/ag_news/img/Diversite.png)
+
+## Word Intrusion Test
+
+Le Word Intrusion Test est une méthode d'évaluation qualitative des topic models. Il consiste à présenter à des annotateurs humains une liste de mots pour chaque topic, dont un mot est un intrus. L'annotateur doit identifier l'intrus. Le score est calculé comme le pourcentage d'intrus correctement identifiés.
+
+### Choix des mots
+
+Pour chaque topic, le modèle (BERTopic ou Top2Vec) fournit une liste ordonnée de mots caractéristiques, du plus représentatif au moins représentatif. On retient les `n_words` premiers (par défaut 5), qui correspondent aux mots ayant le score de pertinence le plus élevé pour ce topic.
+
+Ces mots sont ensuite mélangés aléatoirement avec l'intrus avant d'être présentés à l'annotateur, afin d'éviter tout biais de position.
+
+### Choix de l'intrus
+
+On compare chaque candidat au centroïde du topic cible, et on choisit celui
+qui a la similarité cosinus la plus faible, c'est-à-dire le mot :
+
+- le plus éloigné du centroïde
+- le plus susceptible d'être un intrus
+
+L'intrus n'est pas choisi au hasard : c'est le mot qui maximise l'incohérence
+avec le topic cible tout en étant légitime dans un autre contexte. Cela rend
+le test plus exigeant : si l'annotateur trouve quand même l'intrus, c'est
+que le topic est vraiment cohérent.
+
+## Topic Mixing Test
+
+Le Topic Mixing Test est une méthode d'évaluation consistant à évaluer la capacité d'un modèle à séparer les topics. L'annotateur doit identifier si les mots appartiennent au même topic ou à deux topics différents.
+
+### Choix des mots
+
+On choisit soit une liste de N mots caractéristiques d'un topic, soit une liste de N mots caractéristiques de deux topics différents en enlevant les **stopwords** (mots vides).
