@@ -47,11 +47,15 @@ BERTopic est un framework moderne de modélisation thématique qui répond à de
 
 ## Métriques d'évaluation
 
-Ce projet utilise trois métriques d'évaluation pour évaluer les performances des modèles. Ces métriques sont la cohérence, le retrieval et la diversité.
+Ce projet utilise quatre métriques d'évaluation pour évaluer les performances des modèles. Ces métriques sont la cohérence, le retrieval, la diversité et la cohésion.
+Pour calculer ces métriques, on utilise un modèle différant, cela permet de comparer les 2 modèles indépendamment de leurs représentations internes des embeddings. Bien sûr, il est toujours possible de calculer les métriques en fonction du modèle de production d'embedding interne. Pour information, la métrique de cohésion est calculée sur les embeddings interne. Le modèle choisi pour faire la comparaison est [sentence-transformers/all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2), nous avons choisi ce modèle, car il a été entraîné sur un très grand nombre de données de type texte plus de 1 milliard. Ce modèle a été créé pour encoder des phrases et de courts paragraphes. À partir d'un texte d'entrée, il produit un vecteur qui capture l'information sémantique. Ce vecteur peut être utilisé pour la recherche d'informations, le regroupement de données ou l'analyse de similarité entre phrases.
 
 ### Cohérence
 
-Cette métrique calcule la similirité cosine entre le top K des mots définissant un topic afin de comprendre si les meilleurs mots représentant un topic sont cohérents entre eux.
+Cette métrique mesure la cohérence sémantique de chaque topic en calculant la similarité cosinus entre les embeddings de toutes les paires uniques de mots qui le composent (triangle supérieur de la matrice de similarité, diagonale exclue), puis en faisant la moyenne de ces similarités. Un score proche de 1 indique un topic cohérent dont les mots sont fortement liés sémantiquement.
+Par exemple : 
+Le topic : ["voiture", "camion", "véhicule", "roue"] doit avoir un score de cohérence élevé car tous les mots sont liés sémantiquement.
+Alors que, le topic : ["voiture", "pomme", "véhicule", "roue"] doit avoir un score de cohérence faible car les mots ne sont pas tous liés sémantiquement.
 
 ### Retrieval
 
@@ -62,7 +66,10 @@ Cette métrique calcule la fidélité aux documents du topic en utilisant la mé
 
 ### Diversité
 
-Cette méthode calcule la distance entre les centroïdes des topics les plus proches, puis on calcule la moyenne des sommes de ces distances.
+Cette métrique permet de vérifier si le modèle créé des topics éloigner du point de vue des embeddings. On fait cela, pour vérifier si notre modelé réparti bien les topics dans l'espace, car si deux topics sont trop rapprocher, il pourrait y avoir une confusion lors du placement d'un nouveau document. Pour calculer cette métrique, il y a 2 cas le premier, on utilise le modèle d'embedding interne qui vas calcul le centroide des topics (la moyenne des embeddings des mots qui définisse le topics), puis on va comparer ces centroide entre eu avec une similarité cosinus. On fini par prendre la valeur de similarité du centroide le plus proche qu'on va soustraire à 1, puis on fait la moyenne pour chaque centroide. Le deuxième cas est très semblable au premier sauf qu'on va transformer les mots du topic une phrase par exemple le topic : ["voiture", "camion", "véhicule", "roue"] va devenir "voiture camion véhicule roue", on va créer un embedding de cette phrase avec un modèle externe puis le reste est identique à la première méthode. Le but de cette métrique est donc d'être maximisé. 
+
+### Cohésion
+
 
 ## Architecture
 
@@ -81,7 +88,6 @@ embeddingTopicEvaluatorLib/
 │   ├── cohesion.py
 │   ├── diversity.py
 │   └── retrieval.py
-    
 ├── utils/           # Fonctions utilitaires partagées
 │   └── embeddings.py
 ├── config/          # Configuration globale
